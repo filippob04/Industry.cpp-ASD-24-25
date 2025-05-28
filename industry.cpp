@@ -1,4 +1,5 @@
 #include "industry.h"
+#include <iostream>
 using namespace std;
 using namespace industry;
 
@@ -153,6 +154,46 @@ void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
     c->usedBy = newList;          // headInsert
 }
 
+void printIndustry(const Industry& indus){ // Ricopiata nel main, sarebbe necessario includerla nel .h
+    bItemStorage& s = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+    
+    bool isFirst = true;
+    cout << endl;
+    cout << "/**********************************************************************/" << endl;
+    cout << "/*************************** Basic Items ******************************/" << endl;
+    cout << "/**********************************************************************/" << endl;
+    cout << endl;
+
+    for(int i = 0; i < s.size; i++){
+        if(!isFirst){cout << ", ";}
+        isFirst = false;
+
+        cout << s.items[i].label;
+    }
+
+    cout << endl;
+
+    cout << endl;
+    cout << "/**********************************************************************/" << endl;
+    cout << "/************************* Composite Items ****************************/" << endl;
+    cout << "/**********************************************************************/" << endl;
+    cout << endl;
+
+    isFirst = true;
+    cItemGraph cur = g;
+    while(cur){
+        if(!isFirst){cout << ", ";}
+        isFirst = false;
+
+        cout << cur->label;
+        cur = cur->next;
+    }
+
+    cout << endl;
+    
+    cout << endl;
+}
 
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */

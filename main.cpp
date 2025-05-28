@@ -2,6 +2,7 @@
 #include "industry.h"
 
 using namespace industry;
+void printIndustry(const Industry& indus);
 
 int main() {
     Industry indus = createEmptyIndustry();
@@ -35,5 +36,7 @@ int main() {
     std::string comp3[] = {"ferro", "petrolio"};
     std::cout << (insertItem(indus, "motore", comp3, 2) ? "motore ERRORE\n" : "motore fallito OK\n");
 
+    // Stampa finale dello stato dell'industry
+    printIndustry(indus);
     return 0;
 }

@@ -115,44 +115,78 @@ cItemGraph findCompItem(const cItemGraph& g, Label l){
     return emptyGraph;
 }
 
-void addBItemEdge(cItemGraph& g, bItem b, Quantity q){
+void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
     cItemVertex::bItemList newEdge = new cItemVertex::bItemEdge;
-
     newEdge->bItemRequired = b;
     newEdge->quantityRequired = q;
-    newEdge->next = g->baseList;  // headInsert
-    g->baseList = newEdge;
+    newEdge->next = nullptr;
+
+    // Inserimento ordinato per label nella lista di adiacenza
+    if(!g->baseList || g->baseList->bItemRequired->label > b->label){  // HeadInsert
+        newEdge->next = g->baseList;
+        g->baseList = newEdge;
+    } else{
+        cItemVertex::bItemList cur = g->baseList;
+        while(cur->next && cur->next->bItemRequired->label < b->label){cur = cur->next;}
+        newEdge->next = cur->next;
+        cur->next = newEdge;
+    }
 
     usedByList newList = new usedByNode;
     newList->dependent = g;
     newList->next = b->usedBy;
     newList->prev = nullptr;
 
-    if(b->usedBy != nullptr){ // Se non era una lista vuota
-        b->usedBy->prev = newList;
+    // Inserimento ordinato per label nella lista di dipendenza
+    if(!b->usedBy || b->usedBy->dependent->label > g->label){  // HeadInsert
+        newList->next = b->usedBy;
+        if(b->usedBy){b->usedBy->prev = newList;}
+        b->usedBy = newList;
+    } else{
+        usedByList cur = b->usedBy;
+        while(cur->next && cur->next->dependent->label < g->label){cur = cur->next;}
+        newList->next = cur->next;
+        if (cur->next) cur->next->prev = newList;
+        cur->next = newList;
+        newList->prev = cur;
     }
-
-    b->usedBy = newList;          // headInsert
 }
 
 void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
     cItemVertex::cItemList newEdge = new cItemVertex::cItemEdge;
-
     newEdge->cItemRequired = c;
     newEdge->quantityRequired = q;
-    newEdge->next = g->compList;  // headInsert
-    g->compList = newEdge;
+    newEdge->next = nullptr;
+
+    // Inserimento ordinato per label nella lista di adiacenza
+    if(!g->compList || g->compList->cItemRequired->label > c->label){ // HeadInsert
+        newEdge->next = g->compList;
+        g->compList = newEdge;
+    } else{
+        cItemVertex::cItemList cur = g->compList;
+        while(cur->next && cur->next->cItemRequired->label < c->label){cur = cur->next;}
+        newEdge->next = cur->next;
+        cur->next = newEdge;
+    }
 
     usedByList newList = new usedByNode;
     newList->dependent = g;
     newList->next = c->usedBy;
     newList->prev = nullptr;
 
-    if(c->usedBy != nullptr){ // Se non era una lista vuota
-        c->usedBy->prev = newList;
+    // Inserimento ordinato per label nella lista di dipendenza
+    if(!c->usedBy || c->usedBy->dependent->label > g->label){  // HeadInsert
+        newList->next = c->usedBy;
+        if(c->usedBy){c->usedBy->prev = newList;}
+        c->usedBy = newList;
+    } else{
+        usedByList cur = c->usedBy;
+        while(cur->next && cur->next->dependent->label < g->label){cur = cur->next;}
+        newList->next = cur->next;
+        if(cur->next){cur->next->prev = newList;}
+        cur->next = newList;
+        newList->prev = cur;
     }
-
-    c->usedBy = newList;          // headInsert
 }
 
 void printIndustry(const Industry& indus){ // Ricopiata nel main, sarebbe necessario includerla nel .h

@@ -17,12 +17,13 @@
 /*                     Definizione Struttura Dati                     */
 /**********************************************************************/
 
+// Typedef Iniziali
 typedef int Quantity;
 typedef string Label;
 
-struct cItemVertex; 
-typedef cItemVertex* cItemGraph;
+struct cItemVertex; // forward declaration per utilizzarlo
 
+typedef cItemVertex* cItemGraph;
 const cItemGraph emptyGraph = nullptr;
 
 // Lista Ordinata che memorizza le dipendenze
@@ -33,7 +34,7 @@ struct usedByNode{
 };
 typedef usedByNode* usedByList;
 
-// Tipo item base
+// Tipo item Base
 struct bItemNode{
     Label label;
     Quantity quantity;

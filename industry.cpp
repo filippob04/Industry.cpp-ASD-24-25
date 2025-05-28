@@ -1,11 +1,27 @@
 // TO DO, vedi indicazioni in industry.h
+#include "industry.h"
+using namespace std;
 typedef int Quantity;
-typedef std::string Label;
+typedef string Label;
+
+struct Industry {
+  cItemGraph composedItems;   // Grafo Item Complessi
+  bItemStorage baseItems;     // Array Item Base
+};
+
+// Lista Ordinata che memorizza le dipendenze
+struct usedByNode{
+        cItemVertex* dependent; 
+        usedByNode* next;
+        usedByNode* prev;
+};
+typedef usedByNode* usedByList;
 
 // Tipo item base
 struct bItemNode{
     Label label;
     Quantity quantity;
+    usedByList usedBy; // lista che memorizza le dipendenze
 };
 typedef bItemNode* bItem;
 
@@ -32,19 +48,13 @@ struct cItemVertex{
     };
     typedef bItemEdge* bItemList;
 
-    struct usedByNode{                  // Lista che memorizza le dipendenze
-        cItemVertex* dependent;
-        usedByNode* next;
-    };
-    typedef usedByNode* usedByList;
-
     Label label;           // Label del Vertice
     Quantity quantity;     // Quantita' del Nodo
     bool visited;          // Variabile isVisited
 
     cItemList compList;    // altri item composti se richiesti
     bItemList baseList;    // item base richiesti per questo item composto
-    usedByList usedBy;     // dipendenze
+    usedByList usedBy;     // lista che memorizza le dipendenze
 
     cItemVertex* next;
 };

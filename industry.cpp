@@ -68,3 +68,16 @@ struct Industry {
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
 /**********************************************************************/
+
+// Crea e restituisce un'istanza vuota di Industry.
+Industry createEmptyIndustry(){
+    Industry newIndustry;
+
+    newIndustry.composedItems = nullptr; // Lista Item Composti
+
+    newIndustry.baseItems.items = nullptr; // Array Item Base
+    newIndustry.baseItems.size = 0;
+    newIndustry.baseItems.capacity = 0;
+
+    return newIndustry;
+}

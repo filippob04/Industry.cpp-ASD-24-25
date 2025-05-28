@@ -146,7 +146,7 @@ void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
         usedByList cur = b->usedBy;
         while(cur->next && cur->next->dependent->label < g->label){cur = cur->next;}
         newList->next = cur->next;
-        if (cur->next) cur->next->prev = newList;
+        if(cur->next){cur->next->prev = newList;}
         cur->next = newList;
         newList->prev = cur;
     }

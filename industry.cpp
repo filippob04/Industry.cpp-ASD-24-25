@@ -1,5 +1,6 @@
 #include "industry.h"
 using namespace std;
+using namespace industry;
 
 /**********************************************************************/
 /*                     Definizione Struttura Dati                     */
@@ -7,6 +8,11 @@ using namespace std;
 
 typedef int Quantity;
 typedef string Label;
+
+struct cItemVertex; 
+typedef cItemVertex* cItemGraph;
+
+const cItemGraph emptyGraph = nullptr;
 
 // Lista Ordinata che memorizza le dipendenze
 struct usedByNode{
@@ -58,26 +64,306 @@ struct cItemVertex{
 
     cItemVertex* next;
 };
-typedef cItemVertex* cItemGraph;
 
-struct Industry {
+struct industry::st_Industry {
   cItemGraph composedItems;   // Grafo Item Complessi
   bItemStorage baseItems;     // Array Item Base
 };
+
+
+/**********************************************************************/
+/*                       Funzioni Ausiliarie                          */
+/**********************************************************************/
+
+bool bIsEmpty(const bItemStorage& s){
+    return s.size == 0;
+}
+
+bool cIsEmpty(const cItemGraph& g){
+    return g == emptyGraph;
+}
+
+// Funzione Ausiliaria BinarySearch
+bItem findBasicItem(const bItemStorage& s, int start, int end, Label l){
+    if(bIsEmpty(s)){return nullptr;} // Caso Array vuoto
+    if(start > end){ // caso base
+        return nullptr;
+    }
+
+    int mid = (start+end)/2; // calcolo mid
+
+    if(s.items[mid].label == l){return &s.items[mid];} // Se trovo l'elemento
+    if(l > s.items[mid].label){
+        return findBasicItem(s, mid + 1, end, l); // Cerco a destra
+    } else{
+        return findBasicItem(s, start, mid - 1, l); // Cerco a sinistra
+    }
+}
+
+// Funzione Ausiliaria FindVertex
+cItemGraph findCompItem(const cItemGraph& g, Label l){
+    if(cIsEmpty(g)){return emptyGraph;} // Caso grafo vuoto
+
+    cItemGraph cur = g;
+    while(cur){
+        if(cur->label == l){return cur;}
+        cur = cur->next;
+    }
+
+    return emptyGraph;
+}
+
+void addBItemEdge(cItemGraph& g, bItem b, Quantity q){
+    cItemVertex::bItemList newEdge = new cItemVertex::bItemEdge;
+
+    newEdge->bItemRequired = b;
+    newEdge->quantityRequired = q;
+    newEdge->next = g->baseList;  // headInsert
+    g->baseList = newEdge;
+
+    usedByList newList = new usedByNode;
+    newList->dependent = g;
+    newList->next = b->usedBy;
+    newList->prev = nullptr;
+
+    if(b->usedBy != nullptr){ // Se non era una lista vuota
+        b->usedBy->prev = newList;
+    }
+
+    b->usedBy = newList;          // headInsert
+}
+
+void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
+    cItemVertex::cItemList newEdge = new cItemVertex::cItemEdge;
+
+    newEdge->cItemRequired = c;
+    newEdge->quantityRequired = q;
+    newEdge->next = g->compList;  // headInsert
+    g->compList = newEdge;
+
+    usedByList newList = new usedByNode;
+    newList->dependent = g;
+    newList->next = c->usedBy;
+    newList->prev = nullptr;
+
+    if(c->usedBy != nullptr){ // Se non era una lista vuota
+        c->usedBy->prev = newList;
+    }
+
+    c->usedBy = newList;          // headInsert
+}
+
 
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
 /**********************************************************************/
 
 // Crea e restituisce un'istanza vuota di Industry.
-Industry createEmptyIndustry(){
-    Industry newIndustry;
+Industry industry::createEmptyIndustry(){
+    Industry newIndustry = new st_Industry();
 
-    newIndustry.composedItems = nullptr; // Lista Item Composti
+    newIndustry->composedItems = nullptr; // Lista Item Composti
 
-    newIndustry.baseItems.items = nullptr; // Array Item Base
-    newIndustry.baseItems.size = 0;
-    newIndustry.baseItems.capacity = 0;
+    newIndustry->baseItems.items = nullptr; // Array Item Base
+    newIndustry->baseItems.size = 0;
+    newIndustry->baseItems.capacity = 0;
 
     return newIndustry;
 }
+
+// Inserisce un nuovo basic item di nome 'name' nell'industria.
+// Se esiste gia' un item con quel nome, la funzione restituisce false e non fa nulla.
+// Altrimenti inserisce l'item e restituisce true.
+// Si assume che, quando viene inserito un basic item, la quantita iniziale sia 0.
+bool industry::insertBasicItem(Industry& indus, std::string name){
+    bItemStorage& s = indus->baseItems;
+
+    // Creazione di uno storage se vuoto
+    if(bIsEmpty(s)){
+        s.capacity = 10;
+        s.size = 0;
+        s.items = new bItemNode[s.capacity];
+
+        s.items[0].label = name;
+        s.items[0].quantity = 0;
+        s.items[0].usedBy = nullptr;
+
+        s.size++;
+
+        return true;
+    }
+
+    if(findBasicItem(s, 0, s.size - 1, name) != nullptr){return false;} // Verifico se e' gia' presente
+
+    // Aumento la capacita' se necessario
+    if(s.size == s.capacity){
+    int newCapacity = s.capacity * 2;
+    bItem newArray = new bItemNode[newCapacity];
+
+    int i = 0, j = 0;
+    bool inserted = false;
+
+    while(i < s.size){ // Gestisco la copia e inserendo adeguatamente il valore
+        if(!inserted && s.items[i].label > name){ // Quando trovo la posizione giusta per inserirlo
+            newArray[j].label = name;
+            newArray[j].quantity = 0;
+            newArray[j].usedBy = nullptr;
+            
+            j++;
+            inserted = true;
+        }
+
+        newArray[j++] = s.items[i++]; // Copio l'array
+    }
+
+    // Se e' un elemento che va inserito nel'ultima posizione:
+    if(!inserted){
+        newArray[j].label = name;
+        newArray[j].quantity = 0;
+        newArray[j].usedBy = nullptr;
+    }
+
+    delete[] s.items; // Elimino l'array originale
+
+    s.items = newArray;
+    s.capacity = newCapacity;
+    s.size++; // incremento la size
+
+    return true;
+}
+
+    // Svolgo lo shift a destra per l'inserimento del nuovo elemento
+    int i = s.size - 1;
+    while(i >= 0 && s.items[i].label > name){
+        s.items[i + 1] = s.items[i];
+        i--;
+    }
+
+    s.items[i + 1].label = name;
+    s.items[i + 1].quantity = 0;
+    s.items[i + 1].usedBy = nullptr;
+
+    s.size++;
+
+    return true;
+}
+
+// Inserisce un nuovo item di nome 'name' nell'industria.
+// 'components' e' un array NON VUOTO di lunghezza 's' che contiene i nomi degli item
+// da cui dipende il nuovo item.
+// Se esiste gia' un item con quel nome, la funzione restituisce false e non fa nulla.
+// Se uno qualsiasi degli item indicati in 'components' non esiste nell'industria,
+// la funzione restituisce false e non fa nulla.
+// Altrimenti inserisce l'item e restituisce true.
+bool industry::insertItem(Industry& indus, std::string name, std::string* components, size_t s){
+    bItemStorage& arr = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+
+    if(findCompItem(g, name)){return false;} // Se esiste gia' questo componente -> false
+
+    // Creo degli array temporanei di supporto per evitare ricerche ripetute
+    bItem* B = new bItem[s];
+    cItemGraph* C = new cItemGraph[s];
+    
+    // Verifico che gli item passati da input esistano -> true ? false
+    for(int i = 0; i < s; i++){
+        B[i] = findBasicItem(arr, 0, arr.size - 1, components[i]);
+        C[i] = findCompItem(g, components[i]);
+
+        if(!B[i] && !C[i]){
+            delete[] B;
+            delete[] C;
+            
+            return false;
+        }
+    }
+
+    // A questo punto creo il nuovo vertice
+    cItemGraph newVertex = new cItemVertex;
+
+    newVertex->label = name;
+    newVertex->quantity = 0;
+    newVertex->visited = false;
+
+    newVertex->baseList = nullptr;
+    newVertex->compList = nullptr;
+    newVertex->usedBy = nullptr;    
+    newVertex->next = g;
+    
+    g = newVertex;
+
+    // Gestisco le liste di adiacenza
+    for(int i = 0; i < s; i++){
+        if(B[i]){
+            addBItemEdge(newVertex, B[i], 1);
+        } else{
+            addCItemEdge(newVertex, C[i], 1);
+        }
+    }
+
+    return true;
+}
+
+// Restituisce true se esiste un item con il nome 'name' nell'industria, false altrimenti.
+bool industry::isPresentItem(const Industry& indus, std::string name){
+    if(findBasicItem(indus->baseItems, 0, indus->baseItems.size - 1, name)){return true;}
+    if(findCompItem(indus->composedItems, name)){return true;}
+
+    return false;
+}
+
+// Rimuove l'item di nome 'name' dall'industria.
+// Se esiste almeno un altro item che dipende direttamente o indirettamente da 'name',
+// verra' rimosso anche quello.
+// Se non esiste un item con quel nome, la funzione restituisce false e non fa nulla.
+// Altrimenti, rimuove l'item (e quelli dipendenti) e restituisce true.
+bool industry::removeItem(Industry& indus, std::string name){return false;}
+
+// Aumenta o diminuisce la quantita dell'item di base di nome 'name' di un valore 'v'.
+// Se 'v' e' negativo e la quantita corrente e' Q, la nuova quantita sara' max(Q + v, 0).
+// La quantita non puo' mai diventare negativa.
+// Se non esiste un basic item con quel nome, la funzione restituisce false e non fa nulla.
+// Altrimenti restituisce true.
+bool industry::addBasicItem(Industry& indus, std::string name, int v){
+    bItemStorage& s = indus->baseItems;
+    bItem item = findBasicItem(s, 0, s.size - 1, name);
+
+    if(!item){return false;} // Se l'item cercato non esiste -> false
+    
+    // Calcolo la variazione di quantita' come richiesto da specifica
+    if(v < 0){
+        item->quantity = (item->quantity + v > 0) ? (item->quantity + v) : 0;
+    } else{
+        item->quantity += v;
+    }
+
+    return true;
+}
+
+// Riempie la lista 'lres' (in ordine lessicografico) con i nomi degli item
+// da cui l'item di nome 'name' dipende direttamente.
+// Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
+// Altrimenti restituisce true.
+bool industry::listNeed(const Industry& indus, std::string name, list::List& lres){return false;}
+
+// Riempie la lista 'lres' (in ordine lessicografico) con i nomi degli item
+// che dipendono direttamente dall'item di nome 'name'.
+// Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
+// Altrimenti restituisce true.
+bool industry::listNeededBy(const Industry& indus, std::string name, list::List& lres){return false;}
+
+// Riempie la lista 'lres' (in ordine lessicografico) con i nomi degli item
+// che dipendono (direttamente o indirettamente) dall'item di nome 'name'.
+// Esempio: se o1 dipende da o2 e o2 dipende da o3,
+// allora listNeededByChain("o3") restituira' o2 e o1.
+// Se invece si usa listNeededBy("o3"), la lista non includera' o1
+// perche' non dipende direttamente da o3.
+// Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
+// Altrimenti restituisce true.
+bool industry::listNeededByChain(const Industry& indus, std::string name, list::List& lres){return false;}
+
+// Calcola e memorizza in 'res' il numero massimo di item di nome 'name'
+// che si possono costruire con le quantita attualmente disponibili dei basic item.
+// Se l'item non esiste, la funzione restituisce false e imposta 'res' a 0.
+// Altrimenti restituisce true.
+bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res){return false;}

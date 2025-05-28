@@ -366,7 +366,7 @@ bool industry::insertItem(Industry& indus, std::string name, std::string* compon
     newVertex->usedBy = nullptr;    
     newVertex->next = g;
     
-    g = newVertex;
+    g = newVertex; // HeadInsert
 
     // Gestisco le liste di adiacenza
     for(int i = 0; i < s; i++){

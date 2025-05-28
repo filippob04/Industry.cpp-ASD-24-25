@@ -1,13 +1,12 @@
-// TO DO, vedi indicazioni in industry.h
 #include "industry.h"
 using namespace std;
+
+/**********************************************************************/
+/*                     Definizione Struttura Dati                     */
+/**********************************************************************/
+
 typedef int Quantity;
 typedef string Label;
-
-struct Industry {
-  cItemGraph composedItems;   // Grafo Item Complessi
-  bItemStorage baseItems;     // Array Item Base
-};
 
 // Lista Ordinata che memorizza le dipendenze
 struct usedByNode{
@@ -31,6 +30,7 @@ struct bItemStorage{
     int size;
     int capacity;
 };
+typedef bItemStorage* bItemStoragePtr;
 
 // Grafo CompositeItem - Contiene tutti gli item composti e le loro relative dipendenze
 struct cItemVertex{
@@ -59,3 +59,12 @@ struct cItemVertex{
     cItemVertex* next;
 };
 typedef cItemVertex* cItemGraph;
+
+struct Industry {
+  cItemGraph composedItems;   // Grafo Item Complessi
+  bItemStorage baseItems;     // Array Item Base
+};
+
+/**********************************************************************/
+/*                    Implementazione Funzioni                        */
+/**********************************************************************/

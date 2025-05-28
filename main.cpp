@@ -36,6 +36,37 @@ int main() {
     std::string comp3[] = {"ferro", "petrolio"};
     std::cout << (insertItem(indus, "motore", comp3, 2) ? "motore ERRORE\n" : "motore fallito OK\n");
 
+    list::List lres;
+    if (listNeed(indus, "acciaio", lres)) {
+        std::cout << "Dipendenze dirette di acciaio: " << list::toString(lres) << std::endl;
+    } else {
+        std::cout << "Elemento 'acciaio' non trovato." << std::endl;
+    }
+
+        std::cout << "\nTest listNeededBy su item base:\n";
+    list::List deps1 = list::createEmpty();
+    if (listNeededBy(indus, "ferro", deps1)) {
+        std::cout << "Elementi che dipendono da 'ferro': " << list::toString(deps1) << std::endl;
+    } else {
+        std::cout << "'ferro' non trovato.\n";
+    }
+
+    std::cout << "\nTest listNeededBy su item composto:\n";
+    list::List deps2 = list::createEmpty();
+    if (listNeededBy(indus, "acciaio", deps2)) {
+        std::cout << "Elementi che dipendono da 'acciaio': " << list::toString(deps2) << std::endl;
+    } else {
+        std::cout << "'acciaio' non trovato.\n";
+    }
+
+    std::cout << "\nTest listNeededBy su item inesistente:\n";
+    list::List deps3 = list::createEmpty();
+    if (listNeededBy(indus, "oro", deps3)) {
+        std::cout << "Elementi che dipendono da 'oro': " << list::toString(deps3) << std::endl;
+    } else {
+        std::cout << "'oro' non trovato.\n";
+    }
+    
     // Stampa finale dello stato dell'industry
     printIndustry(indus);
     return 0;

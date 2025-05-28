@@ -420,13 +420,72 @@ bool industry::addBasicItem(Industry& indus, std::string name, int v){
 // da cui l'item di nome 'name' dipende direttamente.
 // Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
 // Altrimenti restituisce true.
-bool industry::listNeed(const Industry& indus, std::string name, list::List& lres){return false;}
+bool industry::listNeed(const Industry& indus, std::string name, list::List& lres){
+    cItemGraph& g = indus->composedItems;
+
+    lres = list::createEmpty(); // Inizializzo la lista di output
+
+    cItemGraph c = findCompItem(g, name);
+    if(cIsEmpty(c)){return false;} // caso base, elemento non trovato
+
+    // Liste di adiacenza (ordinate)
+    cItemVertex::bItemList bList = c->baseList;
+    cItemVertex::cItemList cList = c->compList;
+
+    while(bList && cList){
+        Label bName = bList->bItemRequired->label;
+        Label cName = cList->cItemRequired->label;
+        if(bName < cName){
+            list::addBack(bName, lres);
+            bList = bList->next;
+        } else{
+            list::addBack(cName, lres);
+            cList = cList->next;
+        }
+    }
+    while (bList){
+        list::addBack(bList->bItemRequired->label, lres);
+        bList = bList->next;
+    }
+    while (cList){
+        list::addBack(cList->cItemRequired->label, lres);
+        cList = cList->next;
+    }
+
+    return true;
+}
 
 // Riempie la lista 'lres' (in ordine lessicografico) con i nomi degli item
 // che dipendono direttamente dall'item di nome 'name'.
 // Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
 // Altrimenti restituisce true.
-bool industry::listNeededBy(const Industry& indus, std::string name, list::List& lres){return false;}
+bool industry::listNeededBy(const Industry& indus, std::string name, list::List& lres){
+    bItemStorage& s = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+
+    lres = list::createEmpty(); // Inizializzo la lista di output
+
+    cItemGraph c = findCompItem(g, name);
+    bItem b = findBasicItem(s, 0, s.size, name);
+
+    if(!c && !b){return false;} // caso base, elemento non trovato
+
+    if(b){
+       usedByList cur = b->usedBy;
+       while(cur){
+        list::addBack(cur->dependent->label, lres);
+        cur = cur->next;
+       }
+    } else{
+        usedByList cur = c->usedBy;
+        while(cur){
+            list::addBack(cur->dependent->label, lres);
+            cur = cur->next;
+        }
+    }
+
+    return true;
+}
 
 // Riempie la lista 'lres' (in ordine lessicografico) con i nomi degli item
 // che dipendono (direttamente o indirettamente) dall'item di nome 'name'.

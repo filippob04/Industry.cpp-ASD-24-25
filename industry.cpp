@@ -386,7 +386,7 @@ int howManyItemRecursive(cItemGraph g, const bItemStorage& baseItems){
         int idx = findBasicItemIndex(baseItems, 0, baseItems.size - 1, curB->bItemRequired->label);
         if(idx == -1){return 0;} // item base non trovato
 
-        int possible = baseItems.items[idx].quantity/curB->quantityRequired; // Calcolo quante unità posso produrre
+        int possible = baseItems.items[idx].quantity; // Calcolo quante unità posso produrre (1:1)
         if(possible < minQuantity){minQuantity = possible;} // Aggiorno la quantita'
 
         curB = curB->next;
@@ -397,9 +397,7 @@ int howManyItemRecursive(cItemGraph g, const bItemStorage& baseItems){
 
     while(curC){
         int compQty = howManyItemRecursive(curC->cItemRequired, baseItems);
-        int possible = compQty/curC->quantityRequired;
-
-        if(possible < minQuantity){minQuantity = possible;}
+        if(compQty < minQuantity){minQuantity = compQty;}
         
         curC = curC->next;
     }

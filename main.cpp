@@ -4,6 +4,7 @@
 using namespace industry;
 
 void printIndustry(const Industry& indus);
+int howMany(const Industry& indus, const std::string& name);
 
 int main() {
     Industry indus = createEmptyIndustry();
@@ -87,6 +88,10 @@ int main() {
     std::cout << "\n[📦] Stato completo dell'industria:\n";
     printIndustry(indus);
 
+    cout << "Ferro prima di howManyItem: "<< howMany(indus, "ferro") << endl;
+    cout << "Carbone prima di howManyItem: "<< howMany(indus, "carbone") << endl;
+    cout << "Acciaio prima di howManyItem: "<< howMany(indus, "acciaio") << endl;
+
     // === TEST howManyItem ===
     std::cout << "\n[🔢] Test howManyItem\n";
     unsigned res;
@@ -126,6 +131,10 @@ int main() {
     } else {
         std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
     }
+
+    cout << "Ferro dopo howManyItem: "<< howMany(indus, "ferro") << endl;
+    cout << "Carbone dopo di howManyItem: "<< howMany(indus, "carbone") << endl;
+    cout << "Acciaio dopo di howManyItem: "<< howMany(indus, "acciaio") << endl;
 
     // === RIMOZIONI ===
     std::cout << "\n[✂️] Rimozione elementi\n";

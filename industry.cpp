@@ -319,7 +319,6 @@ bool deleteC(cItemGraph& g, const Label& name){
         prev = cur;
         cur = cur->next;
     }
-
     return false; // Item non trovato
 }
 
@@ -410,6 +409,20 @@ int howManyItemRecursive(cItemGraph g, const bItemStorage& baseItems){
     return minQuantity;
 }
 
+// Funzione Ausiliaria HowMany
+int howMany(const Industry& indus, const std::string& name){
+    bItemStorage& s = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+
+    bItem b = findBasicItem(s, 0, s.size - 1, name);
+    if(b){ // Se item base
+        return b->quantity;
+    } else{ // Item Composto
+        cItemGraph c = findCompItem(g, name);
+        if(!c){return -1;} // Non esiste l'item
+        return c->quantity;
+    }
+}
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
 /**********************************************************************/
@@ -560,7 +573,6 @@ bool industry::insertItem(Industry& indus, std::string name, std::string* compon
             addCItemEdge(newVertex, C[i], 1);
         }
     }
-
     return true;
 }
 
@@ -583,7 +595,6 @@ bool industry::removeItem(Industry& indus, std::string name){
 
     bItem b = findBasicItem(arr, 0, arr.size - 1, name);
     cItemGraph c = findCompItem(g, name);
-
     if(!b && !c){return false;} // Item non trovato
 
     if(b){

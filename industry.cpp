@@ -230,6 +230,92 @@ void printIndustry(const Industry& indus){ // Ricopiata nel main, sarebbe necess
     cout << endl;
 }
 
+// Funzione Ausiliaria per trovare l'indice nell'array
+int findBasicItemIndex(const bItemStorage& s, int start, int end, const Label l){
+    if(start > end || bIsEmpty(s)){return -1;}
+
+    int mid = (start + end)/2;
+
+    if(s.items[mid].label == l){return mid;}
+    if(l > s.items[mid].label){
+        return findBasicItemIndex(s, mid + 1, end, l);
+    } else{
+        return findBasicItemIndex(s, start, mid - 1, l);
+    }
+}
+
+bool deleteB(bItemStorage& s, const Label& name){
+    int pos = findBasicItemIndex(s, 0, s.size - 1, name);
+    if(pos == -1){return false;} // Se posizione non valida
+
+    // Svolgo lo shift a sinistra per l'eliminazione dell'elemento
+    for(int i = pos; i < s.size - 1; i++){
+        s.items[i] = s.items[i + 1];
+    }
+
+    s.size--;
+    return true;
+}
+
+bool deleteC(cItemGraph& g, const Label& name){
+    if(cIsEmpty(g)){return false;}
+
+    // Se il nodo da eliminare e' il primo
+    if(g->label == name){
+        cItemGraph temp = g;
+        g = g->next;
+
+        // Dealloca compList
+        while(temp->compList){
+            cItemVertex::cItemList next = temp->compList->next;
+            delete temp->compList;
+            temp->compList = next;
+        }
+
+        // Dealloca baseList
+        while(temp->baseList){
+            cItemVertex::bItemList next = temp->baseList->next;
+            delete temp->baseList;
+            temp->baseList = next;
+        }
+
+        delete temp;
+        return true;
+    }
+
+    // Oppure cerco il nodo nella lista
+    cItemGraph prev = g;
+    cItemGraph cur = g->next;
+
+    while(cur){
+        if(cur->label == name){
+            prev->next = cur->next;
+
+            // Dealloca compList
+            while(cur->compList){
+                cItemVertex::cItemList next = cur->compList->next;
+                delete cur->compList;
+                cur->compList = next;
+            }
+
+            // Dealloca baseList
+            while(cur->baseList){
+                cItemVertex::bItemList next = cur->baseList->next;
+                delete cur->baseList;
+                cur->baseList = next;
+            }
+
+            delete cur;
+            return true;
+        }
+
+        prev = cur;
+        cur = cur->next;
+    }
+
+    return false; // Item non trovato
+}
+
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
 /**********************************************************************/
@@ -393,7 +479,55 @@ bool industry::isPresentItem(const Industry& indus, std::string name){
 // verra' rimosso anche quello.
 // Se non esiste un item con quel nome, la funzione restituisce false e non fa nulla.
 // Altrimenti, rimuove l'item (e quelli dipendenti) e restituisce true.
-bool industry::removeItem(Industry& indus, std::string name){return false;}
+bool industry::removeItem(Industry& indus, std::string name){
+    bItemStorage& arr = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+
+    bItem b = findBasicItem(arr, 0, arr.size - 1, name);
+    cItemGraph c = findCompItem(g, name);
+
+    if(!b && !c){return false;} // Item non trovato
+
+    if(b){
+        if(b->usedBy == nullptr){
+            deleteB(arr, name);
+        } else{
+            usedByList cur = b->usedBy;
+            b->usedBy = nullptr; 
+
+            while(cur){
+                Label depName = cur->dependent->label;
+                usedByList next = cur->next;
+                delete cur;
+
+                removeItem(indus, depName);
+                cur = next;
+            }
+
+            deleteB(arr, name);
+        }
+    } else{
+        if(c->usedBy == nullptr){
+            deleteC(g, name);
+        } else{
+            usedByList cur = c->usedBy;
+            c->usedBy = nullptr; 
+
+            while(cur){
+                Label depName = cur->dependent->label;
+                usedByList next = cur->next;
+                delete cur;
+                
+                removeItem(indus, depName);
+                cur = next;
+            }
+
+            deleteC(g, name);
+        }
+    }
+
+    return true;
+}
 
 // Aumenta o diminuisce la quantita dell'item di base di nome 'name' di un valore 'v'.
 // Se 'v' e' negativo e la quantita corrente e' Q, la nuova quantita sara' max(Q + v, 0).

@@ -69,5 +69,21 @@ int main() {
     
     // Stampa finale dello stato dell'industry
     printIndustry(indus);
+
+    std::cout << "\nRimuovo un item base senza dipendenti (rame):\n";
+    std::cout << (removeItem(indus, "rame") ? "Rimosso\n" : "Non trovato\n");
+    printIndustry(indus);
+
+    std::cout << "\nRimuovo un item base con dipendenti (ferro):\n";
+    std::cout << (removeItem(indus, "ferro") ? "Rimosso con dipendenti\n" : "Non trovato\n");
+    printIndustry(indus);
+
+    std::cout << "\nRimuovo un item composto con dipendenti (acciaio):\n";
+    std::cout << (removeItem(indus, "acciaio") ? "Rimosso con dipendenti\n" : "Non trovato\n");
+    printIndustry(indus);
+
+    std::cout << "\nRimuovo un item inesistente (oro):\n";
+    std::cout << (removeItem(indus, "oro") ? "Rimosso\n" : "Non trovato\n");
+    printIndustry(indus);
     return 0;
 }

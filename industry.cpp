@@ -11,6 +11,7 @@ using namespace industry;
 // Typedef Iniziali
 typedef int Quantity;
 typedef string Label;
+const int MAX = 1000000;
 
 struct cItemVertex; // forward declaration per utilizzarlo
 
@@ -117,6 +118,7 @@ cItemGraph findCompItem(const cItemGraph& g, Label l){
     return emptyGraph;
 }
 
+// Funzione Ausiliaria per aggiungere un arco item base
 void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
     cItemVertex::bItemList newEdge = new cItemVertex::bItemEdge;
     newEdge->bItemRequired = b;
@@ -156,6 +158,7 @@ void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
     b->visited = false;
 }
 
+// Funzione Ausiliaria per aggiungere un arco item composto
 void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
     cItemVertex::cItemList newEdge = new cItemVertex::cItemEdge;
     newEdge->cItemRequired = c;
@@ -320,6 +323,7 @@ bool deleteC(cItemGraph& g, const Label& name){
     return false; // Item non trovato
 }
 
+// Funzione Ausiliaria resetVisited
 void resetVisited(const Industry& indus){
     // Resetta visited nei base
     for(int i = 0; i < indus->baseItems.size; ++i){
@@ -334,6 +338,7 @@ void resetVisited(const Industry& indus){
     }
 }
 
+// Funzione Ausiliaria DFS per listNeededByChain
 void dfsNeededByChain(const Industry& indus, const std::string& name, list::List& lres){
     bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
     if(b){ // Se e' un Item base
@@ -360,6 +365,49 @@ void dfsNeededByChain(const Industry& indus, const std::string& name, list::List
             cur = cur->next;
         }
     }
+}
+
+// Funzione Ausiliaria HowManyItem
+int howManyItemRecursive(cItemGraph g, const bItemStorage& baseItems){
+    if(g == emptyGraph){return 0;}
+    
+    // Verifico se si tratta di un Item Base
+    bItem b = findBasicItem(baseItems, 0, baseItems.size -1, g->label);
+    if(b){return b->quantity;}
+
+    // Per Item Composto: calcolo il minimo delle quantità producibili dai componenti,
+    // considerando le quantità richieste su ogni edge
+
+    int minQuantity = MAX;
+
+    // Controllo dipendenze su item base
+    cItemVertex::bItemList curB = g->baseList;
+
+    while(curB){ // Scorro la lista degli item base necessari
+        int idx = findBasicItemIndex(baseItems, 0, baseItems.size - 1, curB->bItemRequired->label);
+        if(idx == -1){return 0;} // item base non trovato
+
+        int possible = baseItems.items[idx].quantity/curB->quantityRequired; // Calcolo quante unità posso produrre
+        if(possible < minQuantity){minQuantity = possible;} // Aggiorno la quantita'
+
+        curB = curB->next;
+    }
+
+    // Controllo dipendenze su item composti
+    cItemVertex::cItemList curC = g->compList;
+
+    while(curC){
+        int compQty = howManyItemRecursive(curC->cItemRequired, baseItems);
+        int possible = compQty/curC->quantityRequired;
+
+        if(possible < minQuantity){minQuantity = possible;}
+        
+        curC = curC->next;
+    }
+
+    if(minQuantity == MAX){return 0;} // Se non ne posso creare
+
+    return minQuantity;
 }
 
 /**********************************************************************/
@@ -699,4 +747,18 @@ bool industry::listNeededByChain(const Industry& indus, std::string name, list::
 // che si possono costruire con le quantita attualmente disponibili dei basic item.
 // Se l'item non esiste, la funzione restituisce false e imposta 'res' a 0.
 // Altrimenti restituisce true.
-bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res){return false;}
+bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res){
+    bItemStorage& s = indus->baseItems;
+    cItemGraph& g = indus->composedItems;
+
+    bItem b = findBasicItem(s, 0, s.size - 1, name);
+    if(b){ // Se item base
+        res = b->quantity;
+    } else{ // Item Composto
+        cItemGraph c = findCompItem(g, name);
+        if(!c){return false;} // Non esiste l'item
+        res = howManyItemRecursive(c, indus->baseItems);
+    }
+    
+    return true;
+}

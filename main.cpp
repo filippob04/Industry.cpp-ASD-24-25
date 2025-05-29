@@ -87,6 +87,46 @@ int main() {
     std::cout << "\n[📦] Stato completo dell'industria:\n";
     printIndustry(indus);
 
+    // === TEST howManyItem ===
+    std::cout << "\n[🔢] Test howManyItem\n";
+    unsigned res;
+
+    if (howManyItem(indus, "ferro", res)) {
+        std::cout << "✅ Si possono produrre " << res << " unita' di 'ferro'\n";
+    } else {
+        std::cout << "❌ Errore nel calcolo di 'ferro'\n";
+    }
+
+    if (howManyItem(indus, "acciaio", res)) {
+        std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio'\n";
+    } else {
+        std::cout << "❌ Errore nel calcolo di 'acciaio'\n";
+    }
+
+    if (howManyItem(indus, "acciaio_inox", res)) {
+        std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio_inox'\n";
+    } else {
+        std::cout << "❌ Errore nel calcolo di 'acciaio_inox'\n";
+    }
+
+    if (howManyItem(indus, "piastra_metallica", res)) {
+        std::cout << "✅ Si possono produrre " << res << " unita' di 'piastra_metallica'\n";
+    } else {
+        std::cout << "❌ Errore nel calcolo di 'piastra_metallica'\n";
+    }
+
+    if (howManyItem(indus, "struttura_leggera", res)) {
+        std::cout << "✅ Si possono produrre " << res << " unita' di 'struttura_leggera'\n";
+    } else {
+        std::cout << "❌ Errore nel calcolo di 'struttura_leggera'\n";
+    }
+
+    if (howManyItem(indus, "lingotto_oro", res)) {
+        std::cout << "❌ 'lingotto_oro' non dovrebbe esistere, ma la funzione ha restituito: " << res << "\n";
+    } else {
+        std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
+    }
+
     // === RIMOZIONI ===
     std::cout << "\n[✂️] Rimozione elementi\n";
 

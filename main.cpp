@@ -101,6 +101,12 @@ int main() {
     } else {
         std::cout << "❌ Errore nel calcolo di 'ferro'\n";
     }
+    
+    if(isPresentItem(indus, "acciaio")){
+        cout << "ACCIAIO PRESENTE" << endl;
+    } else{
+        cout << "ACCIAIO NON PRESENTE" << endl;
+    }
 
     if (howManyItem(indus, "acciaio", res)) {
         std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio'\n";

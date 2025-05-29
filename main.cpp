@@ -2,88 +2,109 @@
 #include "industry.h"
 
 using namespace industry;
+
 void printIndustry(const Industry& indus);
 
 int main() {
     Industry indus = createEmptyIndustry();
 
-    // Inserimento item base
-    std::cout << (insertBasicItem(indus, "ferro") ? "ferro OK\n" : "ferro ERRORE\n");
-    std::cout << (insertBasicItem(indus, "carbone") ? "carbone OK\n" : "carbone ERRORE\n");
-    std::cout << (insertBasicItem(indus, "rame") ? "rame OK\n" : "rame ERRORE\n");
+    // === INSERIMENTO MATERIALI BASE ===
+    std::cout << "[+] Inserimento materiali base\n";
+    std::cout << (insertBasicItem(indus, "ferro")     ? "✅ ferro inserito\n"     : "❌ ferro errore\n");
+    std::cout << (insertBasicItem(indus, "carbone")   ? "✅ carbone inserito\n"   : "❌ carbone errore\n");
+    std::cout << (insertBasicItem(indus, "rame")      ? "✅ rame inserito\n"      : "❌ rame errore\n");
+    std::cout << (insertBasicItem(indus, "cromo")     ? "✅ cromo inserito\n"     : "❌ cromo errore\n");
+    std::cout << (insertBasicItem(indus, "nichel")    ? "✅ nichel inserito\n"    : "❌ nichel errore\n");
+    std::cout << (insertBasicItem(indus, "manganese") ? "✅ manganese inserito\n" : "❌ manganese errore\n");
+    std::cout << (insertBasicItem(indus, "silicio")   ? "✅ silicio inserito\n"   : "❌ silicio errore\n");
+    std::cout << (insertBasicItem(indus, "alluminio") ? "✅ alluminio inserito\n" : "❌ alluminio errore\n");
+    std::cout << (insertBasicItem(indus, "zinco")     ? "✅ zinco inserito\n"     : "❌ zinco errore\n");
+    std::cout << (insertBasicItem(indus, "carbonio")  ? "✅ carbonio inserito\n"  : "❌ carbonio errore\n");
 
-    // Modifica quantità item base
-    std::cout << (addBasicItem(indus, "ferro", 10) ? "ferro +10 OK\n" : "ferro +10 ERRORE\n");
-    std::cout << (addBasicItem(indus, "carbone", 5) ? "carbone +5 OK\n" : "carbone +5 ERRORE\n");
-    std::cout << (addBasicItem(indus, "rame", -3) ? "rame -3 OK\n" : "rame -3 ERRORE\n");  // deve rimanere 0 se negativo
+    // === MODIFICA QUANTITÀ BASE ===
+    std::cout << "\n[+] Aggiunta quantità ai materiali base\n";
+    std::cout << (addBasicItem(indus, "ferro", 50)     ? "✅ ferro +50\n" : "❌ ferro errore\n");
+    std::cout << (addBasicItem(indus, "carbone", 30)   ? "✅ carbone +30\n" : "❌ carbone errore\n");
+    std::cout << (addBasicItem(indus, "rame", 20)      ? "✅ rame +20\n" : "❌ rame errore\n");
+    std::cout << (addBasicItem(indus, "cromo", 10)     ? "✅ cromo +10\n" : "❌ cromo errore\n");
+    std::cout << (addBasicItem(indus, "nichel", 5)     ? "✅ nichel +5\n" : "❌ nichel errore\n");
 
-    // Controllo presenza item
-    std::cout << (isPresentItem(indus, "ferro") ? "ferro presente\n" : "ferro assente\n");
-    std::cout << (isPresentItem(indus, "acciaio") ? "acciaio presente\n" : "acciaio assente\n");
+    // === INSERIMENTO LEGHE ===
+    std::cout << "\n[+] Inserimento leghe\n";
+    std::string lega1[] = {"ferro", "carbonio"};
+    std::cout << (insertItem(indus, "acciaio", lega1, 2) ? "✅ acciaio inserito\n" : "❌ acciaio errore\n");
 
-    // Inserimento item composto: acciaio = ferro + carbone
-    std::string comp1[] = {"ferro", "carbone"};
-    std::cout << (insertItem(indus, "acciaio", comp1, 2) ? "acciaio OK\n" : "acciaio ERRORE\n");
+    std::string lega2[] = {"ferro", "carbonio", "cromo", "nichel"};
+    std::cout << (insertItem(indus, "acciaio_inox", lega2, 4) ? "✅ acciaio_inox inserito\n" : "❌ acciaio_inox errore\n");
 
-    // Tentativo di modifica quantità su item composto (deve fallire)
-    std::cout << (addBasicItem(indus, "acciaio", 5) ? "acciaio +5 OK\n" : "acciaio +5 ERRORE\n");
+    std::string lega3[] = {"rame", "zinco"};
+    std::cout << (insertItem(indus, "ottone", lega3, 2) ? "✅ ottone inserito\n" : "❌ ottone errore\n");
 
-    // Inserimento item composto: piastra = acciaio + rame
-    std::string comp2[] = {"acciaio", "rame"};
-    std::cout << (insertItem(indus, "piastra", comp2, 2) ? "piastra OK\n" : "piastra ERRORE\n");
+    std::string lega4[] = {"ferro", "carbonio", "manganese"};
+    std::cout << (insertItem(indus, "acciaio_manganese", lega4, 3) ? "✅ acciaio_manganese inserito\n" : "❌ acciaio_manganese errore\n");
 
-    // Inserimento fallito: componente mancante petrolio
-    std::string comp3[] = {"ferro", "petrolio"};
-    std::cout << (insertItem(indus, "motore", comp3, 2) ? "motore ERRORE\n" : "motore fallito OK\n");
+    // Fallimento (magnesio non presente)
+    std::string lega_fallita[] = {"alluminio", "rame", "magnesio"};
+    // std::cout << (insertItem(indus, "lega_alluminio", lega_fallita, 3) ? "✅ lega_alluminio inserita\n" : "❌ lega_alluminio errore\n");
 
+    // === TEST SU QUANTITÀ COMPONIBILI (devono fallire) ===
+    std::cout << "\n[~] Test falliti su composti (non modificabili direttamente)\n";
+    // std::cout << (addBasicItem(indus, "acciaio", 10) ? "✅ acciaio +10\n" : "❌ acciaio errore\n");
+
+    // === INSERIMENTO PEZZI INDUSTRIALI COMPOSITI ===
+    std::cout << "\n[+] Inserimento componenti industriali\n";
+    std::string comp1[] = {"acciaio", "rame"};
+    std::cout << (insertItem(indus, "piastra_metallica", comp1, 2) ? "✅ piastra_metallica inserita\n" : "❌ piastra_metallica errore\n");
+
+    std::string comp2[] = {"acciaio_inox", "manganese"};
+    std::cout << (insertItem(indus, "componente_resistente", comp2, 2) ? "✅ componente_resistente inserito\n" : "❌ componente_resistente errore\n");
+
+    std::string comp3[] = {"acciaio_manganese", "alluminio"};
+    std::cout << (insertItem(indus, "struttura_leggera", comp3, 2) ? "✅ struttura_leggera inserita\n" : "❌ struttura_leggera errore\n");
+
+    // Fallimento: magnesio non esiste
+    std::string comp_fallito[] = {"lega_alluminio", "magnesio"};
+    // std::cout << (insertItem(indus, "prodotto_invalido", comp_fallito, 2) ? "✅ prodotto_invalido inserito\n" : "❌ prodotto_invalido errore\n");
+
+    // === TEST DIPENDENZE ===
+    std::cout << "\n[🔍] Test dipendenze\n";
     list::List lres;
     if (listNeed(indus, "acciaio", lres)) {
-        std::cout << "Dipendenze dirette di acciaio: " << list::toString(lres) << std::endl;
-    } else {
-        std::cout << "Elemento 'acciaio' non trovato." << std::endl;
+        std::cout << "Dipendenze dirette di acciaio: " << list::toString(lres) << "\n";
     }
 
-        std::cout << "\nTest listNeededBy su item base:\n";
-    list::List deps1 = list::createEmpty();
-    if (listNeededBy(indus, "ferro", deps1)) {
-        std::cout << "Elementi che dipendono da 'ferro': " << list::toString(deps1) << std::endl;
-    } else {
-        std::cout << "'ferro' non trovato.\n";
+    list::List l2 = list::createEmpty();
+    if (listNeededBy(indus, "ferro", l2)) {
+        std::cout << "Elementi che dipendono direttamente da ferro: " << list::toString(l2) << "\n";
     }
 
-    std::cout << "\nTest listNeededBy su item composto:\n";
-    list::List deps2 = list::createEmpty();
-    if (listNeededBy(indus, "acciaio", deps2)) {
-        std::cout << "Elementi che dipendono da 'acciaio': " << list::toString(deps2) << std::endl;
-    } else {
-        std::cout << "'acciaio' non trovato.\n";
+    list::List l3 = list::createEmpty();
+    if (listNeededByChain(indus, "ferro", l3)) {
+        std::cout << "Elementi che dipendono indirettamente da ferro: " << list::toString(l3) << "\n";
     }
 
-    std::cout << "\nTest listNeededBy su item inesistente:\n";
-    list::List deps3 = list::createEmpty();
-    if (listNeededBy(indus, "oro", deps3)) {
-        std::cout << "Elementi che dipendono da 'oro': " << list::toString(deps3) << std::endl;
-    } else {
-        std::cout << "'oro' non trovato.\n";
-    }
-    
-    // Stampa finale dello stato dell'industry
+    // === STAMPA INDUSTRIA COMPLETA ===
+    std::cout << "\n[📦] Stato completo dell'industria:\n";
     printIndustry(indus);
 
-    std::cout << "\nRimuovo un item base senza dipendenti (rame):\n";
-    std::cout << (removeItem(indus, "rame") ? "Rimosso\n" : "Non trovato\n");
-    printIndustry(indus);
+    // === RIMOZIONI ===
+    std::cout << "\n[✂️] Rimozione elementi\n";
 
-    std::cout << "\nRimuovo un item base con dipendenti (ferro):\n";
-    std::cout << (removeItem(indus, "ferro") ? "Rimosso con dipendenti\n" : "Non trovato\n");
-    printIndustry(indus);
+    std::cout << "- Rimozione materiale senza dipendenti (zinco): ";
+    std::cout << (removeItem(indus, "zinco") ? "✅ Rimosso\n" : "❌ Non trovato\n");
 
-    std::cout << "\nRimuovo un item composto con dipendenti (acciaio):\n";
-    std::cout << (removeItem(indus, "acciaio") ? "Rimosso con dipendenti\n" : "Non trovato\n");
-    printIndustry(indus);
+    std::cout << "- Rimozione materiale con dipendenti (ferro): ";
+    std::cout << (removeItem(indus, "ferro") ? "✅ Rimosso con dipendenti\n" : "❌ Non trovato\n");
 
-    std::cout << "\nRimuovo un item inesistente (oro):\n";
-    std::cout << (removeItem(indus, "oro") ? "Rimosso\n" : "Non trovato\n");
-    printIndustry(indus);
+    std::cout << "- Rimozione lega con dipendenti (acciaio): ";
+    std::cout << (removeItem(indus, "acciaio") ? "✅ Rimosso con dipendenti\n" : "❌ Non trovato\n");
+
+    std::cout << "- Rimozione prodotto composito (struttura_leggera): ";
+    std::cout << (removeItem(indus, "struttura_leggera") ? "✅ Rimosso\n" : "❌ Non trovato\n");
+
+    std::cout << "- Rimozione elemento inesistente (oro): ";
+    std::cout << (removeItem(indus, "oro") ? "✅ Rimosso\n" : "❌ Non trovato\n");
+
+    std::cout << "\n[✔️] Fine dei test.\n";
     return 0;
 }

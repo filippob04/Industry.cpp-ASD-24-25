@@ -1,4 +1,5 @@
 #include "industry.h"
+#include "mergeSort.h"
 #include <iostream>
 using namespace std;
 using namespace industry;
@@ -28,6 +29,7 @@ typedef usedByNode* usedByList;
 struct bItemNode{
     Label label;
     Quantity quantity;
+    bool visited;
     usedByList usedBy; // lista che memorizza le dipendenze
 };
 typedef bItemNode* bItem;
@@ -150,6 +152,8 @@ void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
         cur->next = newList;
         newList->prev = cur;
     }
+
+    b->visited = false;
 }
 
 void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
@@ -316,6 +320,48 @@ bool deleteC(cItemGraph& g, const Label& name){
     return false; // Item non trovato
 }
 
+void resetVisited(const Industry& indus){
+    // Resetta visited nei base
+    for(int i = 0; i < indus->baseItems.size; ++i){
+        indus->baseItems.items[i].visited = false;
+    }
+
+    // Resetta visited nei composti
+    cItemGraph cur = indus->composedItems;
+    while(cur){
+        cur->visited = false;
+        cur = cur->next;
+    }
+}
+
+void dfsNeededByChain(const Industry& indus, const std::string& name, list::List& lres){
+    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
+    if(b){ // Se e' un Item base
+        if(b->visited){return;} // Se gia' visitato
+        b->visited = true;
+
+        usedByList cur = b->usedBy;
+        while(cur){ 
+            Label label = cur->dependent->label;
+            list::addBack(label, lres); // Lo aggiungo alla lista 
+            dfsNeededByChain(indus, label, lres); // Passo al vertice label successivo
+            cur = cur->next;
+        }
+    } else{ // Item composto?
+        cItemGraph c = findCompItem(indus->composedItems, name);
+        if(!c || c->visited){return;} // Se non lo trovo o e' gia' visitato
+        c->visited = true;
+
+        usedByList cur = c->usedBy;
+        while(cur){
+            Label label = cur->dependent->label;
+            list::addBack(label, lres); // Lo aggiungo alla lista 
+            dfsNeededByChain(indus, label, lres); // Passo al vertice label successivo
+            cur = cur->next;
+        }
+    }
+}
+
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
 /**********************************************************************/
@@ -348,6 +394,7 @@ bool industry::insertBasicItem(Industry& indus, std::string name){
 
         s.items[0].label = name;
         s.items[0].quantity = 0;
+        s.items[0].visited = false;
         s.items[0].usedBy = nullptr;
 
         s.size++;
@@ -369,6 +416,7 @@ bool industry::insertBasicItem(Industry& indus, std::string name){
         if(!inserted && s.items[i].label > name){ // Quando trovo la posizione giusta per inserirlo
             newArray[j].label = name;
             newArray[j].quantity = 0;
+            newArray[j].visited = false;
             newArray[j].usedBy = nullptr;
             
             j++;
@@ -382,6 +430,7 @@ bool industry::insertBasicItem(Industry& indus, std::string name){
     if(!inserted){
         newArray[j].label = name;
         newArray[j].quantity = 0;
+        newArray[j].visited = false;
         newArray[j].usedBy = nullptr;
     }
 
@@ -401,9 +450,10 @@ bool industry::insertBasicItem(Industry& indus, std::string name){
         i--;
     }
 
-    s.items[i + 1].label = name;
-    s.items[i + 1].quantity = 0;
-    s.items[i + 1].usedBy = nullptr;
+    s.items[i+1].label = name;
+    s.items[i+1].quantity = 0;
+    s.items[i+1].visited = false;
+    s.items[i+1].usedBy = nullptr;
 
     s.size++;
 
@@ -617,7 +667,6 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
             cur = cur->next;
         }
     }
-
     return true;
 }
 
@@ -629,7 +678,22 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
 // perche' non dipende direttamente da o3.
 // Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
 // Altrimenti restituisce true.
-bool industry::listNeededByChain(const Industry& indus, std::string name, list::List& lres){return false;}
+bool industry::listNeededByChain(const Industry& indus, std::string name, list::List& lres){
+
+    resetVisited(indus); // Imposto i flag a false
+    lres = list::createEmpty();
+
+    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
+    cItemGraph c = findCompItem(indus->composedItems, name);
+    if(!b && !c){ // Verifico che gli item siano presenti
+        lres.list = nullptr;
+        return false;
+    }
+
+    dfsNeededByChain(indus, name, lres); // Chiamo la dfs 
+    mergeSort(lres, 0, lres.size - 1); // MergeSort recuperato da uno dei primi laboratori e adattato a List
+    return true;
+}
 
 // Calcola e memorizza in 'res' il numero massimo di item di nome 'name'
 // che si possono costruire con le quantita attualmente disponibili dei basic item.

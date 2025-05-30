@@ -147,6 +147,165 @@ int main() {
         cout << "  Result: FAILED (exception thrown)\n\n";
     }
 
-    cout << "[✔️] Fine dei test." << endl;
+    list::List lst = list::createEmpty();
+    cout<<"*************** Test "<<i++<<": listNeed(ferro) ****************"<<endl;
+    bres=listNeed(indus, "ferro", lst);
+    breq=false;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeed(acciaio) ****************"<<endl;
+    bres=listNeed(indus, "acciaio", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeed(motore) ****************"<<endl;
+    bres=listNeed(indus, "motore", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeed(oro) ****************"<<endl;
+    bres=listNeed(indus, "oro", lst);
+    breq=false;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+    
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededBy(ferro) ****************"<<endl;
+    bres=listNeededBy(indus, "ferro", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededBy(acciaio) ****************"<<endl;
+    bres=listNeededBy(indus, "acciaio", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededBy(motore) ****************"<<endl;
+    bres=listNeededBy(indus, "motore", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(ferro) ****************"<<endl;
+    bres=listNeededByChain(indus, "ferro", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(acciaio) ****************"<<endl;
+    bres=listNeededByChain(indus, "acciaio", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+    
+    cout << "*************** Test " << i++ << ": removeItem 'bullone' ****************" << endl;
+    bres = removeItem(indus, "ferro");
+    breq = true;
+    if (bres == breq) cout << "  Result: PASSED\n\n";
+    else cout << "  Result: FAILED\n\n";
+    
+    cout << "*************** Test " << i++ << ": isPresentItem 'bullone' ****************" << endl;
+    bres = isPresentItem(indus, "bullone");
+    breq = false;
+    if (bres == breq) cout << "  Result: PASSED\n\n";
+    else cout << "  Result: FAILED\n\n";
+
+    cout << "*************** Test " << i++ << ": removeItem 'ferro' ****************" << endl;
+    bres = removeItem(indus, "ferro");
+    breq = true;
+    if (bres == breq) cout << "  Result: PASSED\n\n";
+    else cout << "  Result: FAILED\n\n";
+
+    cout << "*************** Test " << i++ << ": isPresentItem 'acciaio' ****************" << endl;
+    bres = isPresentItem(indus, "acciaio");
+    breq = false;
+    if (bres == breq) cout << "  Result: PASSED\n\n";
+    else cout << "  Result: FAILED\n\n";
+
+    cout << " /* Fine dei test */" << endl;
     return 0;
 }

@@ -339,30 +339,47 @@ void resetVisited(const Industry& indus){
     }
 }
 
-// Funzione Ausiliaria DFS per listNeededByChain
 void dfsNeededByChain(const Industry& indus, const Label& name, list::List& lres){
     bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
-    if(b){ // Se e' un Item base
-        if(b->visited){return;} // Se gia' visitato
+    if(b){ // Item base
+        if(b->visited){return;}
         b->visited = true;
 
         usedByList cur = b->usedBy;
         while(cur){ 
             Label label = cur->dependent->label;
-            list::addBack(label, lres); // Lo aggiungo alla lista 
-            dfsNeededByChain(indus, label, lres); // Passo al vertice label successivo
+
+            bItem bNext = findBasicItem(indus->baseItems, 0, indus->baseItems.size, label);
+            
+            cItemGraph cNext = emptyGraph;
+            if(!bNext){
+                cNext = findCompItem(indus->composedItems, label);
+            }
+            
+            if((bNext && !bNext->visited) || (cNext && !cNext->visited)){
+                list::addBack(label, lres);
+            }
+            dfsNeededByChain(indus, label, lres);
             cur = cur->next;
         }
-    } else{ // Item composto?
+    } else{ // Item composto
         cItemGraph c = findCompItem(indus->composedItems, name);
-        if(!c || c->visited){return;} // Se non lo trovo o e' gia' visitato
+        if(!c || c->visited) return;
         c->visited = true;
 
         usedByList cur = c->usedBy;
         while(cur){
             Label label = cur->dependent->label;
-            list::addBack(label, lres); // Lo aggiungo alla lista 
-            dfsNeededByChain(indus, label, lres); // Passo al vertice label successivo
+            bItem bNext = findBasicItem(indus->baseItems, 0, indus->baseItems.size, label);
+
+            cItemGraph cNext = emptyGraph;
+            if(!bNext){
+                cNext = findCompItem(indus->composedItems, label);
+            }
+            if((bNext && !bNext->visited) || (cNext && !cNext->visited)){
+                list::addBack(label, lres);
+            }
+            dfsNeededByChain(indus, label, lres);
             cur = cur->next;
         }
     }

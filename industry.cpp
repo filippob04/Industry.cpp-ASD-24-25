@@ -825,7 +825,7 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
         //   cout << " " << s.items[i].label << " " << s.items[i].quantity << " ";
         //}
 
-        bItemStorage temp = copyBaseItems(indus->baseItems); // copia simulata
+        bItemStorage temp = copyBaseItems(indus->baseItems); // copia simulata (almeno per gli item di base), se item composto??
         res = howManyItemRecursive(c, temp);
 
         //cout << "DEBUG DOPO: " << endl;

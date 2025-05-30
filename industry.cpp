@@ -11,6 +11,7 @@ using namespace industry;
 // Typedef Iniziali
 typedef int Quantity;
 typedef string Label;
+const int MAX = 100000000;
 
 struct cItemVertex; // forward declaration per utilizzarlo
 
@@ -378,146 +379,83 @@ void dfsNeededByChain(const Industry& indus, const Label& name, list::List& lres
 }
 
 // Funzione Ausiliaria DFS per listNeedChain
-void dfsNeedChain(const Industry& indus, const Label& name, list::List& lres){
-    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
-    if(b){ // Se e' un Item base
-        if(b->visited){return;} // Se gia' visitato
-        b->visited = true;
-    } else{ // Item composto?
-        cItemGraph c = findCompItem(indus->composedItems, name);
-        if(!c || c->visited){return;} // Se non lo trovo o e' gia' visitato
-        c->visited = true;
-        
-        cItemVertex::bItemList curB = c->baseList;
-        while(curB){
-            if(!curB->bItemRequired->visited){
-                curB->bItemRequired->visited = true;
-                list::addBack(curB->bItemRequired->label, lres);
-            }
-            curB = curB->next;
-        }
-
-        cItemVertex::cItemList curC = c->compList;
-        while(curC){
-            if(!curC->cItemRequired->visited){
-                list::addBack(curC->cItemRequired->label, lres);
-                dfsNeedChain(indus, curC->cItemRequired->label, lres);
-            }
-            curC = curC->next;
-        }
-    }
-}
+//void dfsNeedChain(const Industry& indus, const Label& name, list::List& lres){
+//    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
+//    if(b){ // Se e' un Item base
+//        if(b->visited){return;} // Se gia' visitato
+//        b->visited = true;
+//    } else{ // Item composto?
+//        cItemGraph c = findCompItem(indus->composedItems, name);
+//        if(!c || c->visited){return;} // Se non lo trovo o e' gia' visitato
+//        c->visited = true;
+//        
+//       cItemVertex::bItemList curB = c->baseList;
+//       while(curB){
+//            if(!curB->bItemRequired->visited){
+//                curB->bItemRequired->visited = true;
+//                list::addBack(curB->bItemRequired->label, lres);
+//            }
+//            curB = curB->next;
+//        }
+//        cItemVertex::cItemList curC = c->compList;
+//       while(curC){
+//           if(!curC->cItemRequired->visited){
+//                list::addBack(curC->cItemRequired->label, lres);
+//                dfsNeedChain(indus, curC->cItemRequired->label, lres);
+//            }
+//            curC = curC->next;
+//        }
+//   }
+//}
 
 // Funzione Ausiliaria simile a listNeededByChain, necessaria per howManyItem
-bool listNeedChain(const Industry& indus, const Label& name, list::List& lres){
-    resetVisited(indus); // Imposto i flag a false
-    lres = list::createEmpty();
+// bool listNeedChain(const Industry& indus, const Label& name, list::List& lres){
+//    resetVisited(indus); // Imposto i flag a false
+//    lres = list::createEmpty();
+//    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
+//    cItemGraph c = findCompItem(indus->composedItems, name);
+//    if(!b && !c){ // Verifico che gli item siano presenti
+//        lres.list = nullptr;
+//        return false;
+//    }
+//    dfsNeedChain(indus, name, lres); // Chiamo la dfs 
+//    mergeSort(lres, 0, lres.size - 1); // MergeSort recuperato da uno dei primi laboratori e adattato a List
+//    return true;
+//}
 
-    bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
-    cItemGraph c = findCompItem(indus->composedItems, name);
-    if(!b && !c){ // Verifico che gli item siano presenti
-        lres.list = nullptr;
-        return false;
+// Funzione ausiliaria howManyItem
+void howManyItemAux(cItemGraph item, Label* bItemLabel, int* bRequiredQuantity, int& bSize, int maxSize){
+    cItemVertex::bItemList curB = item->baseList;
+    while(curB){ // Calcolo delle risorse base
+        int idx = -1;
+        for(int i = 0; i < bSize; i++){
+            if(bItemLabel[i] == curB->bItemRequired->label){
+                idx = i;
+                break;
+            }
+        }
+        if(idx == -1){
+            if(bSize >= maxSize){throw std::string("howManyItemAux function error: bSize >= maxSize");}
+            idx = bSize++;
+            bItemLabel[idx] = curB->bItemRequired->label;
+            bRequiredQuantity[idx] = 0;
+        }
+        bRequiredQuantity[idx] += curB->quantityRequired;
+
+        curB = curB->next;
     }
 
-    dfsNeedChain(indus, name, lres); // Chiamo la dfs 
-    mergeSort(lres, 0, lres.size - 1); // MergeSort recuperato da uno dei primi laboratori e adattato a List
-    return true;
-}
-
-// Funzioni Ausiliarie per operare su copie Array
-int findBIndex(bItemHMI* bIdx, int bSize, const Label& label){
-    for(int i = 0; i < bSize; i++){
-        if(bIdx[i].label == label){return i;}
-    }
-    return -1;
-}
-
-int findCIndex(cItemHMI* cIdx, int cSize, const Label& label){
-    for(int i = 0; i < cSize; i++){
-        if(cIdx[i].label == label){return i;}
-    }
-    return -1;
-}
-
-// Funzione Ausiliaria HowManyItem
-int howManyItemRecursive(cItemGraph g, bItemHMI* bIdx, int bSize, cItemHMI* cIdx, int cSize){
-    if(cIsEmpty(g)){return 0;}
-    
-    // Verifico se si tratta di un Item Base (superfluo)
-    //int bPos = findBIndex(bIdx, bSize, g->label);
-    //if(bPos != -1){return bIdx[bPos].quantity;}
-
-    cItemVertex::cItemList curC = g->compList;
+    // Ora si passa agli item composti
+    cItemVertex::cItemList curC = item->compList;
     while(curC){
-        int idxC = findCIndex(cIdx, cSize, curC->cItemRequired->label);
-        if(idxC == -1){return 0;} // Errore
-
-        howManyItemRecursive(curC->cItemRequired, bIdx, bSize, cIdx, cSize);
+        for(int i = 0; i < curC->quantityRequired; i++){
+            howManyItemAux(curC->cItemRequired, bItemLabel, bRequiredQuantity, bSize, maxSize);
+        }
         curC = curC->next;
     }
-
-    int count = 0;
-    while(true){
-        bool producible = true;
-
-        // Controlla risorse base
-        cItemVertex::bItemList curB = g->baseList;
-        while(curB){
-            int idxB = findBIndex(bIdx, bSize, curB->bItemRequired->label);
-            // cout << "Item base: " << bIdx[idxB].label << " " << bIdx[idxB].quantity  << endl;
-            if(idxB == -1 || bIdx[idxB].quantity < curB->quantityRequired){
-                producible = false;
-                break;
-            }
-            curB = curB->next;
-        }
-        if(!producible){break;}
-
-        // Controlla risorse composte ricorsivamente
-        cItemVertex::cItemList curC = g->compList;
-        while(curC){
-            int idxC = findCIndex(cIdx, cSize, curC->cItemRequired->label);
-            // cout << "Item composto: " << cIdx[idxC].label << " " << cIdx[idxC].quantity  << endl;
-            if(idxC == -1 || cIdx[idxC].quantity < curC->quantityRequired){
-                producible = false;
-                break;
-            }
-            curC = curC->next;
-        }
-        if(!producible){break;}
-
-        // Consuma risorse base
-        curB = g->baseList;
-        while(curB){
-            int idxB = findBIndex(bIdx, bSize, curB->bItemRequired->label);
-            bIdx[idxB].quantity -= curB->quantityRequired;
-            curB = curB->next;
-        }
-
-        // Consuma risorse composte (decremento quantità in cIdx)
-        curC = g->compList;
-        while(curC){
-            int idxC = findCIndex(cIdx, cSize, curC->cItemRequired->label);
-            cIdx[idxC].quantity -= curC->quantityRequired;
-            curC = curC->next;
-        }
-
-        // Incrementa la quantità prodotta dell'item corrente
-        int idxThis = findCIndex(cIdx, cSize, g->label);
-        if(idxThis != -1){
-            cIdx[idxThis].quantity += 1;
-            // cout << "Prodotta unità di " << g->label << ", nuova quantità: " << cIdx[idxThis].quantity << endl;
-        } else{
-            throw std::string("howManyRecursive function error: cannot increment item quantity");
-        }
-        count++;
-    }
-
-    return count;
 }
 
-// Funzione Ausiliaria HowMany
+// Funzione Ausiliaria per DEBUG HowMany
 int howMany(const Industry& indus, const std::string& name){
     bItemStorage& s = indus->baseItems;
     cItemGraph& g = indus->composedItems;
@@ -868,9 +806,7 @@ bool industry::listNeededByChain(const Industry& indus, std::string name, list::
 // che si possono costruire con le quantita attualmente disponibili dei basic item.
 // Se l'item non esiste, la funzione restituisce false e imposta 'res' a 0.
 // Altrimenti restituisce true.
-bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res) {
-    resetVisited(indus);
-
+bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res){
     bItemStorage& s = indus->baseItems;
     cItemGraph& g = indus->composedItems;
 
@@ -883,59 +819,24 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
     cItemGraph c = findCompItem(g, name);
     if(!c){return false;} // Item inesistente
 
-    list::List temp = list::createEmpty();
-    if(!listNeedChain(indus, c->label, temp)){throw std::string("howManyItem function error: listNeedChain = nullptr");}
-    // cout << list::toString(temp);
+    
+    string bItemLabel[s.size];
+    int bRequiredQuantity[s.size];
+    int bSize = 0;
 
-    int size = list::size(temp);
+    howManyItemAux(c, bItemLabel, bRequiredQuantity, bSize, s.size); // Funzione Ausiliaria howManyItem
 
-    // Alloco array di supporto
-    bItemHMI* bIdx = new bItemHMI[size + 1];
-    cItemHMI* cIdx = new cItemHMI[size + 1];
-    int bCount = 0, cCount = 0;
+    unsigned bProduced = MAX;
 
-    // Scorro la lista 'temp' e classifico ogni label
-    for(int i = 0; i < size; i++){
-        Label label = list::get(i, temp);
+    for(int i = 0; i < bSize; i++){
+        bItem b = findBasicItem(s, 0, s.size - 1, bItemLabel[i]);
+        if(!b){return false;} // risorsa base inesistente
+        if(bRequiredQuantity[i] == 0){continue;}
 
-        bItem b = findBasicItem(s, 0, s.size - 1, label);
-        if(b){
-            bIdx[bCount].label = label;
-            bIdx[bCount].quantity = b->quantity;
-            bCount++;
-        } else{
-            cItemGraph c = findCompItem(g, label);
-            cIdx[cCount].label = label;
-            cIdx[cCount].quantity = c->quantity;
-            cCount++;
-        }
+        unsigned curB = b->quantity / bRequiredQuantity[i];
+        if(curB < bProduced){bProduced = curB;} // Quantita' producibile di questo elemento
     }
 
-    // Assicurati che l'item principale sia presente in cIdx
-    int idxMain = findCIndex(cIdx, cCount, c->label);
-    if(idxMain == -1){
-        // Se non è presente, aggiungilo:
-        cIdx[cCount].label = c->label;
-        cIdx[cCount].quantity = c->quantity;  // quantità iniziale, probabilmente 0 o quella attuale
-        cCount++;
-    }
-
-    //cout << "ITEM BASE" << endl;
-    //for(int i = 0; i < bCount; i++){
-    //    cout << bIdx[i].label << " ";
-    //    cout << bIdx[i].quantity << " ";
-    //}
-    //cout << endl;
-    //cout << "ITEM COMPOSTI" << endl;
-    //for(int i = 0; i < cCount; i++){
-    //    cout << cIdx[i].label << " ";
-    //    cout << cIdx[i].quantity << " ";
-    //}
-    // cout << endl;
-
-    res = howManyItemRecursive(c, bIdx, bCount, cIdx, cCount); // funzione ausiliaria ricorsiva
-
-    delete[] bIdx;
-    delete[] cIdx;
+    res = bProduced; // Ritorno il valore di item che posso produrre
     return true;
 }

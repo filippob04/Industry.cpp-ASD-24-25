@@ -414,8 +414,8 @@ void dfsNeededByChain(const Industry& indus, const Label& name, list::List& lres
 //}
 
 // Funzione ausiliaria howManyItem
-void howManyItemAux(cItemGraph item, Label* bItemLabel, int* bRequiredQuantity, int& bSize, int maxSize){
-    cItemVertex::bItemList curB = item->baseList;
+void howManyItemAux(cItemGraph c, Label* bItemLabel, int* bRequiredQuantity, int& bSize, int maxSize){
+    cItemVertex::bItemList curB = c->baseList;
     while(curB){ // Calcolo delle risorse base
         int idx = -1;
         for(int i = 0; i < bSize; i++){
@@ -424,22 +424,22 @@ void howManyItemAux(cItemGraph item, Label* bItemLabel, int* bRequiredQuantity, 
                 break;
             }
         }
-        if(idx == -1){
+        if(idx == -1){ // Se l'item base non e' ancora presente lo devo aggiungere
             if(bSize >= maxSize){throw std::string("howManyItemAux function error: bSize >= maxSize");}
             idx = bSize++;
             bItemLabel[idx] = curB->bItemRequired->label;
             bRequiredQuantity[idx] = 0;
         }
-        bRequiredQuantity[idx] += curB->quantityRequired;
+        bRequiredQuantity[idx] += curB->quantityRequired; // Aumento la quantita' richiesta
 
         curB = curB->next;
     }
 
-    // Ora si passa agli item composti
-    cItemVertex::cItemList curC = item->compList;
+    // Ora si passa ricorsivamente agli item composti
+    cItemVertex::cItemList curC = c->compList;
     while(curC){
         for(int i = 0; i < curC->quantityRequired; i++){
-            howManyItemAux(curC->cItemRequired, bItemLabel, bRequiredQuantity, bSize, maxSize);
+            howManyItemAux(curC->cItemRequired, bItemLabel, bRequiredQuantity, bSize, maxSize); // chiamata ricorsiva
         }
         curC = curC->next;
     }
@@ -809,14 +809,14 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
     cItemGraph c = findCompItem(g, name);
     if(!c){return false;} // Item inesistente
 
-    
+    // Array PARALLELI di supporto per memorizzare gli stadi intermedi di consumo
     string bItemLabel[s.size];
     int bRequiredQuantity[s.size];
     int bSize = 0;
 
     howManyItemAux(c, bItemLabel, bRequiredQuantity, bSize, s.size); // Funzione Ausiliaria howManyItem
 
-    unsigned bProduced = MAX;
+    unsigned bProduced = MAX; // costante che contiene un intero molto grande
 
     for(int i = 0; i < bSize; i++){
         bItem b = findBasicItem(s, 0, s.size - 1, bItemLabel[i]);

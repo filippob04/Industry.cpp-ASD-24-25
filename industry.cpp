@@ -88,6 +88,7 @@ struct industry::st_Industry {
 /*                       Funzioni Ausiliarie                          */
 /**********************************************************************/
 
+// Funzioni Ausiliarie isEmpty
 bool bIsEmpty(const bItemStorage& s){
     return s.size == 0;
 }
@@ -204,6 +205,7 @@ void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
     }
 }
 
+// Funzione Ausiliaria per print
 void printIndustry(const Industry& indus){ // Ricopiata nel main, sarebbe necessario includerla nel .h
     bItemStorage& s = indus->baseItems;
     cItemGraph& g = indus->composedItems;
@@ -245,7 +247,7 @@ void printIndustry(const Industry& indus){ // Ricopiata nel main, sarebbe necess
     cout << endl;
 }
 
-// Funzione Ausiliaria per trovare l'indice nell'array
+// Funzione Ausiliaria BinarySearch per trovare l'indice nell'array
 int findBasicItemIndex(const bItemStorage& s, int start, int end, const Label l){
     if(start > end || bIsEmpty(s)){return -1;}
 
@@ -259,6 +261,7 @@ int findBasicItemIndex(const bItemStorage& s, int start, int end, const Label l)
     }
 }
 
+// Funzioni Ausiliarie delete
 bool deleteB(bItemStorage& s, const Label& name){
     int pos = findBasicItemIndex(s, 0, s.size - 1, name);
     if(pos == -1){return false;} // Se posizione non valida
@@ -405,6 +408,7 @@ void dfsNeedChain(const Industry& indus, const Label& name, list::List& lres){
     }
 }
 
+// Funzione Ausiliaria simile a listNeededByChain, necessaria per howManyItem
 bool listNeedChain(const Industry& indus, const Label& name, list::List& lres){
     resetVisited(indus); // Imposto i flag a false
     lres = list::createEmpty();
@@ -421,6 +425,7 @@ bool listNeedChain(const Industry& indus, const Label& name, list::List& lres){
     return true;
 }
 
+// Funzioni Ausiliarie per operare su copie Array
 int findBIndex(bItemHMI* bIdx, int bSize, const Label& label){
     for(int i = 0; i < bSize; i++){
         if(bIdx[i].label == label){return i;}
@@ -448,8 +453,7 @@ int howManyItemRecursive(cItemGraph g, bItemHMI* bIdx, int bSize, cItemHMI* cIdx
         int idxC = findCIndex(cIdx, cSize, curC->cItemRequired->label);
         if(idxC == -1){return 0;} // Errore
 
-        int qtyProduced = howManyItemRecursive(curC->cItemRequired, bIdx, bSize, cIdx, cSize);
-        cIdx[idxC].quantity += qtyProduced;  // Aggiorna quantità disponibile di tale item composto
+       howManyItemRecursive(curC->cItemRequired, bIdx, bSize, cIdx, cSize);
 
         curC = curC->next;
     }
@@ -856,7 +860,8 @@ bool industry::listNeededByChain(const Industry& indus, std::string name, list::
     }
 
     dfsNeededByChain(indus, name, lres); // Chiamo la dfs 
-    mergeSort(lres, 0, lres.size - 1); // MergeSort recuperato da uno dei primi laboratori e adattato a List
+    // MergeSort recuperato da uno dei primi laboratori e adattato a List
+    if(!mergeSort(lres, 0, lres.size - 1)){throw std::string("listNeededByChain function error: mergeSort error");} 
     return true;
 }
 

@@ -19,18 +19,18 @@ namespace list{
 
         int sxIndex = 0, dxIndex = 0, curIndex = start;
 
-        while(sxIndex < n1 && dxIndex < n2) {
-            if(vSx[sxIndex] < vDx[dxIndex]) {
+        while(sxIndex < n1 && dxIndex < n2){
+            if(vSx[sxIndex] < vDx[dxIndex]){
                 l.list[curIndex++] = vSx[sxIndex++];
             } else {
                 l.list[curIndex++] = vDx[dxIndex++];
             }
         }
 
-        while(sxIndex < n1) {
+        while(sxIndex < n1){
             l.list[curIndex++] = vSx[sxIndex++];
         }
-        while(dxIndex < n2) {
+        while(dxIndex < n2){
             l.list[curIndex++] = vDx[dxIndex++];
         }
 
@@ -40,12 +40,14 @@ namespace list{
 
     }
 
-    void mergeSort(List& l, int start, int end) {
-        if(start < end) {
+    bool mergeSort(List& l, int start, int end){
+        if(start < end){
             int mid = (start + end) / 2;
             mergeSort(l, start, mid);
             mergeSort(l, mid + 1, end);
             merge(l, start, mid, end);
+            return true;
         }
+        return false;
     }
 }

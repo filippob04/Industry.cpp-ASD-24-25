@@ -85,12 +85,14 @@ int main() {
     if (listNeededBy(indus, "ferro", l2)) {
         std::cout << "Elementi che dipendono direttamente da ferro: " << list::toString(l2) << "\n";
     }
-
-    list::List l3 = list::createEmpty();
-    if (listNeededByChain(indus, "ferro", l3)) {
-        std::cout << "Elementi che dipendono indirettamente da ferro: " << list::toString(l3) << "\n";
+    try{
+        list::List l3 = list::createEmpty();
+        if (listNeededByChain(indus, "ferro", l3)) {
+            std::cout << "Elementi che dipendono indirettamente da ferro: " << list::toString(l3) << "\n";
+        }
+    } catch(const std::string& e){
+        std::cout << "Errore: " << e << std::endl;
     }
-
     // === STAMPA INDUSTRIA COMPLETA ===
     std::cout << "\n[📦] Stato completo dell'industria:\n";
     printIndustry(indus);
@@ -103,45 +105,45 @@ int main() {
     cout << "Struttura Leggera prima di howManyItem: "<< howMany(indus, "struttura_leggera") << endl;
 
     try{
-    // === TEST howManyItem ===
-    std::cout << "\n[🔢] Test howManyItem\n";
-    unsigned res;
-    
-    if (howManyItem(indus, "ferro", res)) {
-        std::cout << "✅ Si possono produrre " << res << " unita' di 'ferro'\n";
-    } else {
-        std::cout << "❌ Errore nel calcolo di 'ferro'\n";
-    }
+        // === TEST howManyItem ===
+        std::cout << "\n[🔢] Test howManyItem\n";
+        unsigned res;
+        
+        if (howManyItem(indus, "ferro", res)) {
+            std::cout << "✅ Si possono produrre " << res << " unita' di 'ferro'\n";
+        } else {
+            std::cout << "❌ Errore nel calcolo di 'ferro'\n";
+        }
 
-    if (howManyItem(indus, "acciaio", res)) {
-        std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio'\n";
-    } else {
-        std::cout << "❌ Errore nel calcolo di 'acciaio'\n";
-    }
+        if (howManyItem(indus, "acciaio", res)) {
+            std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio'\n";
+        } else {
+            std::cout << "❌ Errore nel calcolo di 'acciaio'\n";
+        }
 
-    if (howManyItem(indus, "acciaio_inox", res)) {
-        std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio_inox'\n";
-    } else {
-        std::cout << "❌ Errore nel calcolo di 'acciaio_inox'\n";
-    }
+        if (howManyItem(indus, "acciaio_inox", res)) {
+            std::cout << "✅ Si possono produrre " << res << " unita' di 'acciaio_inox'\n";
+        } else {
+            std::cout << "❌ Errore nel calcolo di 'acciaio_inox'\n";
+        }
 
-    if (howManyItem(indus, "piastra_metallica", res)) {
-        std::cout << "✅ Si possono produrre " << res << " unita' di 'piastra_metallica'\n";
-    } else {
-        std::cout << "❌ Errore nel calcolo di 'piastra_metallica'\n";
-    }
+        if (howManyItem(indus, "piastra_metallica", res)) {
+            std::cout << "✅ Si possono produrre " << res << " unita' di 'piastra_metallica'\n";
+        } else {
+            std::cout << "❌ Errore nel calcolo di 'piastra_metallica'\n";
+        }
 
-    if (howManyItem(indus, "struttura_leggera", res)) {
-        std::cout << "✅ Si possono produrre " << res << " unita' di 'struttura_leggera'\n";
-    } else {
-        std::cout << "❌ Errore nel calcolo di 'struttura_leggera'\n";
-    }
+        if (howManyItem(indus, "struttura_leggera", res)) {
+            std::cout << "✅ Si possono produrre " << res << " unita' di 'struttura_leggera'\n";
+        } else {
+            std::cout << "❌ Errore nel calcolo di 'struttura_leggera'\n";
+        }
 
-    if (howManyItem(indus, "lingotto_oro", res)) {
-        std::cout << "❌ 'lingotto_oro' non dovrebbe esistere, ma la funzione ha restituito: " << res << "\n";
-    } else {
-        std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
-    }
+        if (howManyItem(indus, "lingotto_oro", res)) {
+            std::cout << "❌ 'lingotto_oro' non dovrebbe esistere, ma la funzione ha restituito: " << res << "\n";
+        } else {
+            std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
+        }
     } catch(const std::string& e){
         std::cout << "Errore: " << e << std::endl;
     }

@@ -4,7 +4,7 @@
 #include "list-array.h"
 
 namespace list {
-    void mergeSort(List& l, int start, int end);
+    bool mergeSort(List& l, int start, int end);
 }
 
 #endif

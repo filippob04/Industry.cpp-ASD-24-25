@@ -452,9 +452,8 @@ int howManyItemRecursive(cItemGraph g, bItemHMI* bIdx, int bSize, cItemHMI* cIdx
     while(curC){
         int idxC = findCIndex(cIdx, cSize, curC->cItemRequired->label);
         if(idxC == -1){return 0;} // Errore
-
-       howManyItemRecursive(curC->cItemRequired, bIdx, bSize, cIdx, cSize);
-
+        
+        howManyItemRecursive(curC->cItemRequired, bIdx, bSize, cIdx, cSize);
         curC = curC->next;
     }
 

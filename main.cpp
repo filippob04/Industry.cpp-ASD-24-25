@@ -98,11 +98,11 @@ int main() {
     cout << "Ferro prima di howManyItem: "<< howMany(indus, "ferro") << endl;
     cout << "Carbonio prima di howManyItem: "<< howMany(indus, "carbonio") << endl;
     cout << "Acciaio prima di howManyItem: "<< howMany(indus, "acciaio") << endl;
-    cout << "Acciao Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
+    cout << "Acciaio Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
     cout << "Piastra Metallica prima di howManyItem: "<< howMany(indus, "piastra_metallica") << endl;
     cout << "Struttura Leggera prima di howManyItem: "<< howMany(indus, "struttura_leggera") << endl;
 
-
+    try{
     // === TEST howManyItem ===
     std::cout << "\n[🔢] Test howManyItem\n";
     unsigned res;
@@ -142,12 +142,14 @@ int main() {
     } else {
         std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
     }
-
+    } catch(const std::string& e){
+        std::cout << "Errore: " << e << std::endl;
+    }
     cout << endl;
     cout << "Ferro dopo howManyItem: "<< howMany(indus, "ferro") << endl;
     cout << "Carbonio dopo di howManyItem: "<< howMany(indus, "carbonio") << endl;
     cout << "Acciaio dopo di howManyItem: "<< howMany(indus, "acciaio") << endl;
-    cout << "Acciao Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
+    cout << "Acciaio Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
     cout << "Piastra Metallica prima di howManyItem: "<< howMany(indus, "piastra_metallica") << endl;
     cout << "Struttura Leggera prima di howManyItem: "<< howMany(indus, "struttura_leggera") << endl;
 

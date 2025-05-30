@@ -75,16 +75,6 @@ struct industry::st_Industry {
   bItemStorage baseItems;     // Array Item Base
 };
 
-// Struct ausiliari 
-    struct bItemHMI {
-        Label label;
-        Quantity quantity;
-    };
-    struct cItemHMI {
-        Label label;
-        Quantity quantity;
-    };
-
 /**********************************************************************/
 /*                       Funzioni Ausiliarie                          */
 /**********************************************************************/

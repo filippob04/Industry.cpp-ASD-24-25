@@ -20,6 +20,7 @@
 // Typedef Iniziali
 typedef int Quantity;
 typedef string Label;
+const int MAX = 100000000;
 
 struct cItemVertex; // forward declaration per utilizzarlo
 
@@ -38,6 +39,7 @@ typedef usedByNode* usedByList;
 struct bItemNode{
     Label label;
     Quantity quantity;
+    bool visited;
     usedByList usedBy; // lista che memorizza le dipendenze
 };
 typedef bItemNode* bItem;

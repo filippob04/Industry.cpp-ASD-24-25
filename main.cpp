@@ -29,6 +29,7 @@ int main() {
     std::cout << (addBasicItem(indus, "rame", 20)      ? "✅ rame +20\n" : "❌ rame errore\n");
     std::cout << (addBasicItem(indus, "cromo", 10)     ? "✅ cromo +10\n" : "❌ cromo errore\n");
     std::cout << (addBasicItem(indus, "nichel", 5)     ? "✅ nichel +5\n" : "❌ nichel errore\n");
+    std::cout << (addBasicItem(indus, "carbonio", 30)   ? "✅ carbone +30\n" : "❌ carbone errore\n");
 
     // === INSERIMENTO LEGHE ===
     std::cout << "\n[+] Inserimento leghe\n";
@@ -45,11 +46,11 @@ int main() {
     std::cout << (insertItem(indus, "acciaio_manganese", lega4, 3) ? "✅ acciaio_manganese inserito\n" : "❌ acciaio_manganese errore\n");
 
     // Fallimento (magnesio non presente)
-    std::string lega_fallita[] = {"alluminio", "rame", "magnesio"};
+    // std::string lega_fallita[] = {"alluminio", "rame", "magnesio"};
     // std::cout << (insertItem(indus, "lega_alluminio", lega_fallita, 3) ? "✅ lega_alluminio inserita\n" : "❌ lega_alluminio errore\n");
 
     // === TEST SU QUANTITÀ COMPONIBILI (devono fallire) ===
-    std::cout << "\n[~] Test falliti su composti (non modificabili direttamente)\n";
+    // std::cout << "\n[~] Test falliti su composti (non modificabili direttamente)\n";
     // std::cout << (addBasicItem(indus, "acciaio", 10) ? "✅ acciaio +10\n" : "❌ acciaio errore\n");
 
     // === INSERIMENTO PEZZI INDUSTRIALI COMPOSITI ===
@@ -74,6 +75,12 @@ int main() {
         std::cout << "Dipendenze dirette di acciaio: " << list::toString(lres) << "\n";
     }
 
+    std::cout << "\n[🔍] Test dipendenze\n";
+    list::List l1;
+    if (listNeed(indus, "piastra_metallica", l1)) {
+        std::cout << "Dipendenze dirette di piastra_metallica: " << list::toString(l1) << "\n";
+    }
+
     list::List l2 = list::createEmpty();
     if (listNeededBy(indus, "ferro", l2)) {
         std::cout << "Elementi che dipendono direttamente da ferro: " << list::toString(l2) << "\n";
@@ -89,23 +96,21 @@ int main() {
     printIndustry(indus);
 
     cout << "Ferro prima di howManyItem: "<< howMany(indus, "ferro") << endl;
-    cout << "Carbone prima di howManyItem: "<< howMany(indus, "carbone") << endl;
+    cout << "Carbonio prima di howManyItem: "<< howMany(indus, "carbonio") << endl;
     cout << "Acciaio prima di howManyItem: "<< howMany(indus, "acciaio") << endl;
+    cout << "Acciao Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
+    cout << "Piastra Metallica prima di howManyItem: "<< howMany(indus, "piastra_metallica") << endl;
+    cout << "Struttura Leggera prima di howManyItem: "<< howMany(indus, "struttura_leggera") << endl;
+
 
     // === TEST howManyItem ===
     std::cout << "\n[🔢] Test howManyItem\n";
     unsigned res;
-
+    
     if (howManyItem(indus, "ferro", res)) {
         std::cout << "✅ Si possono produrre " << res << " unita' di 'ferro'\n";
     } else {
         std::cout << "❌ Errore nel calcolo di 'ferro'\n";
-    }
-    
-    if(isPresentItem(indus, "acciaio")){
-        cout << "ACCIAIO PRESENTE" << endl;
-    } else{
-        cout << "ACCIAIO NON PRESENTE" << endl;
     }
 
     if (howManyItem(indus, "acciaio", res)) {
@@ -138,9 +143,13 @@ int main() {
         std::cout << "✅ 'lingotto_oro' non esiste: risultato corretto (res = 0)\n";
     }
 
+    cout << endl;
     cout << "Ferro dopo howManyItem: "<< howMany(indus, "ferro") << endl;
-    cout << "Carbone dopo di howManyItem: "<< howMany(indus, "carbone") << endl;
+    cout << "Carbonio dopo di howManyItem: "<< howMany(indus, "carbonio") << endl;
     cout << "Acciaio dopo di howManyItem: "<< howMany(indus, "acciaio") << endl;
+    cout << "Acciao Inox prima di howManyItem: "<< howMany(indus, "acciaio_inox") << endl;
+    cout << "Piastra Metallica prima di howManyItem: "<< howMany(indus, "piastra_metallica") << endl;
+    cout << "Struttura Leggera prima di howManyItem: "<< howMany(indus, "struttura_leggera") << endl;
 
     // === RIMOZIONI ===
     std::cout << "\n[✂️] Rimozione elementi\n";

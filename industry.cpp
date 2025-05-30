@@ -11,7 +11,6 @@ using namespace industry;
 // Typedef Iniziali
 typedef int Quantity;
 typedef string Label;
-const int MAX = 1000000;
 
 struct cItemVertex; // forward declaration per utilizzarlo
 
@@ -367,44 +366,81 @@ void dfsNeededByChain(const Industry& indus, const std::string& name, list::List
 }
 
 // Funzione Ausiliaria HowManyItem
-int howManyItemRecursive(cItemGraph g, const bItemStorage& baseItems){
-    if(g == emptyGraph){return 0;}
+int howManyItemRecursive(cItemGraph g, bItemStorage& baseItems){
+    if(cIsEmpty(g)){return 0;}
     
-    // Verifico se si tratta di un Item Base
+    // Verifico se si tratta di un Item Base (superfluo)
     bItem b = findBasicItem(baseItems, 0, baseItems.size -1, g->label);
     if(b){return b->quantity;}
 
-    // Per Item Composto: calcolo il minimo delle quantità producibili dai componenti,
-    // considerando le quantità richieste su ogni edge
+    if(g->visited){return 0;} // Se è già visitato -> ciclo
+    g->visited = true; // Marca nodo come visitato
 
-    int minQuantity = MAX;
+    int count = 0;
 
-    // Controllo dipendenze su item base
-    cItemVertex::bItemList curB = g->baseList;
+    while(true){
+        // cout << "DEBUG: "<< g->label;
+        cItemVertex::bItemList curB = g->baseList;
+        //while(curB){
+        //   bItem item = findBasicItem(baseItems, 0, baseItems.size -1, curB->bItemRequired->label);
+        //   cout << "DEBUG: " << item->label;
+        //   cout << "DEBUG: " << item->quantity;
+        //
+        //    cout << " " << curB->bItemRequired->label << curB->bItemRequired->quantity << " ";
+        //    curB = curB->next;
+        // }
+        // curB = g->baseList;
+        bool producible = true;
 
-    while(curB){ // Scorro la lista degli item base necessari
-        int idx = findBasicItemIndex(baseItems, 0, baseItems.size - 1, curB->bItemRequired->label);
-        if(idx == -1){return 0;} // item base non trovato
+        while(curB){ // Cerco nella lista di base di tale elemento composto
+            bItem bReq = findBasicItem(baseItems, 0, baseItems.size - 1, curB->bItemRequired->label);
+            // cout << "DEBUG Label: " <<  bReq->label << ", ";
+            // cout << "Quantity: " <<  bReq->quantity << " ";
+            if(!bReq || bReq->quantity < 1){
+                producible = false;
+                break;
+            }
+            curB = curB->next;
+        }
 
-        int possible = baseItems.items[idx].quantity; // Calcolo quante unità posso produrre (1:1)
-        if(possible < minQuantity){minQuantity = possible;} // Aggiorno la quantita'
+        if (!producible) break; // Se non ho abbastanza item di base
 
-        curB = curB->next;
+        cItemVertex::cItemList curC = g->compList;
+        while(curC){ // Cerco nella lista di base di tale elemento composto
+            int qtyProduced = howManyItemRecursive(curC->cItemRequired, baseItems);
+            if(qtyProduced < 1){
+                producible = false;
+                break;
+            }
+            curC = curC->next;
+        }
+
+        if(!producible) break; // Se non ho abbastanza item composti
+
+        curB = g->baseList; // Se siamo qui dunque l'item e' producibile (almeno una copia)
+        while(curB){
+            bItem bReq = findBasicItem(baseItems, 0, baseItems.size - 1, curB->bItemRequired->label);
+            bReq->quantity -= 1; // Sempre 1:1
+            curB = curB->next;
+        }
+
+        // Consumo item composti ricorsivamente
+        curC = g->compList;
+        while(curC){
+            cItemGraph c = curC->cItemRequired;
+            c->quantity -= curC->quantityRequired;
+
+            howManyItemRecursive(c, baseItems);
+
+            curC = curC->next;
+        }
+
+        g->quantity += 1;
+        count++;
     }
 
-    // Controllo dipendenze su item composti
-    cItemVertex::cItemList curC = g->compList;
-
-    while(curC){
-        int compQty = howManyItemRecursive(curC->cItemRequired, baseItems);
-        if(compQty < minQuantity){minQuantity = compQty;}
-        
-        curC = curC->next;
-    }
-
-    if(minQuantity == MAX){return 0;} // Se non ne posso creare
-
-    return minQuantity;
+    g->visited = false;
+    return count;
 }
 
 // Funzione Ausiliaria HowMany
@@ -420,6 +456,21 @@ int howMany(const Industry& indus, const std::string& name){
         if(!c){return -1;} // Non esiste l'item
         return c->quantity;
     }
+}
+
+// Funzione Ausiliaria di Copia
+bItemStorage copyBaseItems(const bItemStorage& original){
+    bItemStorage copy;
+    copy.size = original.size;
+    copy.capacity = original.capacity;
+    copy.items = new bItemNode[copy.size]; 
+    for(int i = 0; i < original.size; i++){
+        copy.items[i].label = original.items[i].label;
+        copy.items[i].quantity = original.items[i].quantity;
+        copy.items[i].visited = original.items[i].visited;
+        copy.items[i].usedBy = nullptr;
+    }
+    return copy;
 }
 /**********************************************************************/
 /*                    Implementazione Funzioni                        */
@@ -757,6 +808,8 @@ bool industry::listNeededByChain(const Industry& indus, std::string name, list::
 // Se l'item non esiste, la funzione restituisce false e imposta 'res' a 0.
 // Altrimenti restituisce true.
 bool industry::howManyItem(const Industry& indus, std::string name, unsigned& res){
+    resetVisited(indus);
+
     bItemStorage& s = indus->baseItems;
     cItemGraph& g = indus->composedItems;
 
@@ -766,7 +819,19 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
     } else{ // Item Composto
         cItemGraph c = findCompItem(g, name);
         if(!c){return false;} // Non esiste l'item
-        res = howManyItemRecursive(c, indus->baseItems);
+
+        //cout << "DEBUG PRIMA: " << endl;
+        //for(int i = 0; i < s.size; i++){
+        //   cout << " " << s.items[i].label << " " << s.items[i].quantity << " ";
+        //}
+
+        bItemStorage temp = copyBaseItems(indus->baseItems); // copia simulata
+        res = howManyItemRecursive(c, temp);
+
+        //cout << "DEBUG DOPO: " << endl;
+        //for(int i = 0; i < temp.size; i++){
+        //   cout << " " << temp.items[i].label << " " << temp.items[i].quantity << " ";
+        //}
     }
     
     return true;

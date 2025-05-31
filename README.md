@@ -101,7 +101,7 @@ struct industry::st_Industry {
     l’elenco degli altri item necessari alla sua fabbricazione.
 
 ```
-
+##### 🛠️ Operazioni Richieste
 ``` text
 
     • Creare una nuova industria inizialmente vuota.

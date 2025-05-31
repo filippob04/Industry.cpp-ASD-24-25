@@ -154,6 +154,7 @@ void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
         c->usedBy->prev = newList;
     }
     c->usedBy = newList;
+    c->visited = false;
 }
 
 // Funzione Ausiliaria per print

@@ -41,6 +41,7 @@ namespace list{
     }
 
     bool mergeSort(List& l, int start, int end){
+        if(list::size(l) == 1){return true;} // Aggiunto questo controllo per evitare sorting su versori
         if(start < end){
             int mid = (start + end) / 2;
             mergeSort(l, start, mid);

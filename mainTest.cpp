@@ -12,6 +12,9 @@ int main() {
     unsigned ires = 0, ireq = 0;
 
     indus = createEmptyIndustry();
+    cout << endl;
+    cout << " /* Inizio dei test */" << endl;
+    cout << endl;
 
     cout << "*************** Test " << i++ << ": insertBasicItem 'ferro' ****************" << endl;
     bres = insertBasicItem(indus, "ferro");
@@ -281,9 +284,39 @@ int main() {
         cout<<"  Obtained Returned Value: "<<bres<<endl;
     }
     cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(bullone) ****************"<<endl;
+    bres=listNeededByChain(indus, "bullone", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
+
+    list::clear(lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(motore) ****************"<<endl;
+    bres=listNeededByChain(indus, "motore", lst);
+    breq=true;
+    if(bres==breq){
+        cout<<"  Result: PASSED"<<endl;
+        cout << list::toString(lst);
+        cout<< endl;
+    }else {
+        cout<<"  Result: FAILED"<<endl;
+        cout<<"  Expected Returned Value: "<<breq<<endl;
+        cout<<"  Obtained Returned Value: "<<bres<<endl;
+    }
+    cout<<endl;
     
     cout << "*************** Test " << i++ << ": removeItem 'bullone' ****************" << endl;
-    bres = removeItem(indus, "ferro");
+    bres = removeItem(indus, "bullone");
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
@@ -300,12 +333,19 @@ int main() {
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
+    cout << "*************** Test " << i++ << ": isPresentItem 'ferro' ****************" << endl;
+    bres = isPresentItem(indus, "ferro");
+    breq = false;
+    if (bres == breq) cout << "  Result: PASSED\n\n";
+    else cout << "  Result: FAILED\n\n";
+
     cout << "*************** Test " << i++ << ": isPresentItem 'acciaio' ****************" << endl;
     bres = isPresentItem(indus, "acciaio");
     breq = false;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
-
+    
     cout << " /* Fine dei test */" << endl;
+    cout << endl;
     return 0;
 }

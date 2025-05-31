@@ -762,10 +762,8 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
 
     lres = list::createEmpty(); // Inizializzo la lista di output
 
-    cItemGraph c = findCompItem(g, name);
+    cItemGraph c = emptyGraph;
     bItem b = findBasicItem(s, 0, s.size, name);
-
-    if(!c && !b){return false;} // caso base, elemento non trovato
 
     if(b){
        usedByList cur = b->usedBy;
@@ -774,6 +772,8 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
         cur = cur->next;
        }
     } else{
+        c = findCompItem(g, name);
+        if(!c){return false;} // Item non trovato
         usedByList cur = c->usedBy;
         while(cur){
             list::addBack(cur->dependent->label, lres);
@@ -792,20 +792,29 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
 // Se l'item non esiste, la funzione restituisce false e imposta 'lres' a nullptr.
 // Altrimenti restituisce true.
 bool industry::listNeededByChain(const Industry& indus, std::string name, list::List& lres){
-
-    resetVisited(indus); // Imposto i flag a false
+    resetVisited(indus); // Imposto i flag visited a false
     lres = list::createEmpty();
 
+    // Verifico di che item si tratta
     bItem b = findBasicItem(indus->baseItems, 0, indus->baseItems.size, name);
-    cItemGraph c = findCompItem(indus->composedItems, name);
-    if(!b && !c){ // Verifico che gli item siano presenti
-        lres.list = nullptr;
-        return false;
+    cItemGraph c = nullptr;
+
+    if(b){
+        if(!b->usedBy){return true;}
+    } else{
+        c = findCompItem(indus->composedItems, name);
+        if(!c){
+            lres.list = nullptr;
+            return false;
+        }
+        if(!c->usedBy){return true;}
     }
 
-    dfsNeededByChain(indus, name, lres); // Chiamo la dfs 
-    // MergeSort recuperato da uno dei primi laboratori e adattato a List
-    if(!mergeSort(lres, 0, lres.size - 1)){throw std::string("listNeededByChain function error: mergeSort error");} 
+    dfsNeededByChain(indus, name, lres); // Chiamo la DFS
+    if(!mergeSort(lres, 0, lres.size - 1)){
+        throw std::string("listNeededByChain function error: mergeSort error");
+    }
+
     return true;
 }
 

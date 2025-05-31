@@ -648,8 +648,7 @@ bool industry::removeItem(Industry& indus, std::string name){
     cItemGraph& g = indus->composedItems;
 
     bItem b = findBasicItem(arr, 0, arr.size - 1, name);
-    cItemGraph c = findCompItem(g, name);
-    if(!b && !c){return false;} // Item non trovato
+    cItemGraph c = emptyGraph;
 
     if(b){
         if(b->usedBy == nullptr){
@@ -670,6 +669,8 @@ bool industry::removeItem(Industry& indus, std::string name){
             deleteB(arr, name);
         }
     } else{
+        c = findCompItem(g, name);
+        if(!c){return false;} // Item non Trovato
         if(c->usedBy == nullptr){
             deleteC(g, name);
         } else{

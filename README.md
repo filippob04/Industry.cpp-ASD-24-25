@@ -104,20 +104,20 @@ struct industry::st_Industry {
 ##### 🛠️ Operazioni Richieste
 ``` text
 
-    • Creare una nuova industria inizialmente vuota.
-    • Inserire nuovi item:
+    1. Creare una nuova industria inizialmente vuota.
+    2. Inserire nuovi item:
         – Basic item, cioè oggetti senza dipendenze;
         – Item composti, definiti a partire da un insieme non vuoto di altri item (le componenti).
-    • Verificare la presenza di un item dato il suo nome.
-    • Rimuovere un item, eliminando ricorsivamente anche tutti gli item che ne dipendono 
-      direttamente o indirettamente.
-    • Aggiornare la quantità di un basic item, sommando (o sottraendo) un valore intero specificato. 
-      La quantità non può mai diventare negativa.
-    • Ottenere le dipendenze dirette di un item: data la descrizione dell’industria, 
-      è possibile ottenere la lista degli item necessari per produrre un certo item.
-    • Ottenere gli item che dipendono da un dato item, sia in modo diretto (immediato)
-      sia lungo una catena di dipendenze (indiretto).
-    • Calcolare quante unità di un certo item è possibile produrre, date le quantità 
-      attualmente disponibili dei basic item.
+    3. Verificare la presenza di un item dato il suo nome.
+    4. Rimuovere un item, eliminando ricorsivamente anche tutti gli item che ne dipendono 
+       direttamente o indirettamente.
+    5. Aggiornare la quantità di un basic item, sommando (o sottraendo) un valore intero specificato. 
+       La quantità non può mai diventare negativa.
+    6. Ottenere le dipendenze dirette di un item: data la descrizione dell’industria, 
+       è possibile ottenere la lista degli item necessari per produrre un certo item.
+    7. Ottenere gli item che dipendono da un dato item, sia in modo diretto (immediato)
+       sia lungo una catena di dipendenze (indiretto).
+    8. Calcolare quante unità di un certo item è possibile produrre, date le quantità 
+       attualmente disponibili dei basic item.
 
 ```

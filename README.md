@@ -87,14 +87,17 @@ struct industry::st_Industry {
 ```
 
 ``` text
-    In questo laboratorio ci proponiamo di progettare e implementare una struttura dati a supporto della gestione dei processi
-    produttivi di un’industria semplificata. L’industria è in grado di fabbricare oggetti, detti item, i quali possono essere di due tipi:
+    In questo laboratorio ci proponiamo di progettare e implementare una struttura dati
+    a supporto della gestione dei processi produttivi di un’industria semplificata. 
+    L’industria è in grado di fabbricare oggetti, detti item, i quali possono essere di due tipi:
 
-    • Basic item: oggetti elementari, disponibili inizialmente in quantità finita, che non dipendono da altri item per essere
-    ottenuti;
-    • Item composti: oggetti che possono essere prodotti solo a partire da uno o più altri item (basic o composti), secondo una specifica relazione di dipendenza.
+    • Basic item: oggetti elementari, disponibili inizialmente in quantità finita, 
+      che non dipendono da altri item per essere ottenuti;
+    • Item composti: oggetti che possono essere prodotti solo a partire da uno 
+      o più altri item (basic o composti), secondo una specifica relazione di dipendenza.
 
-    Nella struttura dati vengono registrati gli item che l’industria può produrre e, per ciascuno, l’elenco degli altri item necessari alla sua fabbricazione.
+    Nella struttura dati vengono registrati gli item che l’industria può produrre e, per ciascuno, 
+    l’elenco degli altri item necessari alla sua fabbricazione.
 
 ```
 
@@ -105,12 +108,15 @@ struct industry::st_Industry {
         – Basic item, cioè oggetti senza dipendenze;
         – Item composti, definiti a partire da un insieme non vuoto di altri item (le componenti).
     • Verificare la presenza di un item dato il suo nome.
-    • Rimuovere un item, eliminando ricorsivamente anche tutti gli item che ne dipendono direttamente o indirettamente.
-    • Aggiornare la quantità di un basic item, sommando (o sottraendo) un valore intero specificato. La quantità non può
-      mai diventare negativa.
-    • Ottenere le dipendenze dirette di un item: data la descrizione dell’industria, è possibile ottenere la lista degli item
-      necessari per produrre un certo item.
-    • Ottenere gli item che dipendono da un dato item, sia in modo diretto (immediato) sia lungo una catena di dipendenze.
-    • Calcolare quante unità di un certo item è possibile produrre, date le quantità attualmente disponibili dei basic item.
+    • Rimuovere un item, eliminando ricorsivamente anche tutti gli item che ne dipendono 
+      direttamente o indirettamente.
+    • Aggiornare la quantità di un basic item, sommando (o sottraendo) un valore intero specificato. 
+      La quantità non può mai diventare negativa.
+    • Ottenere le dipendenze dirette di un item: data la descrizione dell’industria, 
+      è possibile ottenere la lista degli item necessari per produrre un certo item.
+    • Ottenere gli item che dipendono da un dato item, sia in modo diretto (immediato)
+      sia lungo una catena di dipendenze (indiretto).
+    • Calcolare quante unità di un certo item è possibile produrre, date le quantità 
+      attualmente disponibili dei basic item.
 
 ```

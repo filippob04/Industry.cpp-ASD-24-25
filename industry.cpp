@@ -123,77 +123,37 @@ void addBItemEdge(cItemGraph& g, bItem b, Quantity q) {
     cItemVertex::bItemList newEdge = new cItemVertex::bItemEdge;
     newEdge->bItemRequired = b;
     newEdge->quantityRequired = q;
-    newEdge->next = nullptr;
-
-    // Inserimento ordinato per label nella lista di adiacenza
-    if(!g->baseList || g->baseList->bItemRequired->label > b->label){  // HeadInsert
-        newEdge->next = g->baseList;
-        g->baseList = newEdge;
-    } else{
-        cItemVertex::bItemList cur = g->baseList;
-        while(cur->next && cur->next->bItemRequired->label < b->label){cur = cur->next;}
-        newEdge->next = cur->next;
-        cur->next = newEdge;
-    }
+    newEdge->next = g->baseList;
+    g->baseList = newEdge;
 
     usedByList newList = new usedByNode;
     newList->dependent = g;
     newList->next = b->usedBy;
     newList->prev = nullptr;
-
-    // Inserimento ordinato per label nella lista di dipendenza
-    if(!b->usedBy || b->usedBy->dependent->label > g->label){  // HeadInsert
-        newList->next = b->usedBy;
-        if(b->usedBy){b->usedBy->prev = newList;}
-        b->usedBy = newList;
-    } else{
-        usedByList cur = b->usedBy;
-        while(cur->next && cur->next->dependent->label < g->label){cur = cur->next;}
-        newList->next = cur->next;
-        if(cur->next){cur->next->prev = newList;}
-        cur->next = newList;
-        newList->prev = cur;
+    if(b->usedBy){
+        b->usedBy->prev = newList;
     }
+    b->usedBy = newList;
 
     b->visited = false;
 }
 
-// Funzione Ausiliaria per aggiungere un arco item composto
+// Funzione Ausiliaria per aggiungere un arco item composto 
 void addCItemEdge(cItemGraph& g, cItemGraph c, Quantity q){
     cItemVertex::cItemList newEdge = new cItemVertex::cItemEdge;
     newEdge->cItemRequired = c;
     newEdge->quantityRequired = q;
-    newEdge->next = nullptr;
-
-    // Inserimento ordinato per label nella lista di adiacenza
-    if(!g->compList || g->compList->cItemRequired->label > c->label){ // HeadInsert
-        newEdge->next = g->compList;
-        g->compList = newEdge;
-    } else{
-        cItemVertex::cItemList cur = g->compList;
-        while(cur->next && cur->next->cItemRequired->label < c->label){cur = cur->next;}
-        newEdge->next = cur->next;
-        cur->next = newEdge;
-    }
+    newEdge->next = g->compList;
+    g->compList = newEdge;
 
     usedByList newList = new usedByNode;
     newList->dependent = g;
     newList->next = c->usedBy;
     newList->prev = nullptr;
-
-    // Inserimento ordinato per label nella lista di dipendenza
-    if(!c->usedBy || c->usedBy->dependent->label > g->label){  // HeadInsert
-        newList->next = c->usedBy;
-        if(c->usedBy){c->usedBy->prev = newList;}
-        c->usedBy = newList;
-    } else{
-        usedByList cur = c->usedBy;
-        while(cur->next && cur->next->dependent->label < g->label){cur = cur->next;}
-        newList->next = cur->next;
-        if(cur->next){cur->next->prev = newList;}
-        cur->next = newList;
-        newList->prev = cur;
+    if(c->usedBy){
+        c->usedBy->prev = newList;
     }
+    c->usedBy = newList;
 }
 
 // Funzione Ausiliaria per print
@@ -750,6 +710,10 @@ bool industry::listNeed(const Industry& indus, std::string name, list::List& lre
         cList = cList->next;
     }
 
+    if(!mergeSort(lres, 0, lres.size - 1)){
+        throw std::string("listNeed function error: mergeSort error");
+    }
+
     return true;
 }
 
@@ -780,6 +744,9 @@ bool industry::listNeededBy(const Industry& indus, std::string name, list::List&
             list::addBack(cur->dependent->label, lres);
             cur = cur->next;
         }
+    }
+    if(!mergeSort(lres, 0, lres.size - 1)){
+        throw std::string("listNeededBy function error: mergeSort error");
     }
     return true;
 }
@@ -837,8 +804,8 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
     if(!c){return false;} // Item inesistente
 
     // Array PARALLELI di supporto per memorizzare gli stadi intermedi di consumo
-    string bItemLabel[s.size];
-    int bRequiredQuantity[s.size];
+    string* bItemLabel = new string[s.size];
+    int* bRequiredQuantity = new int[s.size];
     int bSize = 0;
 
     howManyItemAux(c, bItemLabel, bRequiredQuantity, bSize, s.size); // Funzione Ausiliaria howManyItem
@@ -855,5 +822,8 @@ bool industry::howManyItem(const Industry& indus, std::string name, unsigned& re
     }
 
     res = bProduced; // Ritorno il valore di item che posso produrre
+
+    delete[] bItemLabel;
+    delete[] bRequiredQuantity;
     return true;
 }

@@ -1,6 +1,8 @@
 #include <iostream>
 #include "industry.h"
 
+void printIndustry(const industry::Industry& indus);
+
 int main() {
     using namespace std;
     using namespace industry;
@@ -28,22 +30,22 @@ int main() {
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": insertBasicItem 'carbonio' ****************" << endl;
-    bres = insertBasicItem(indus, "carbonio");
+    cout << "*************** Test " << i++ << ": insertBasicItem 'carbone' ****************" << endl;
+    bres = insertBasicItem(indus, "carbone");
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": insertItem 'acciaio' = ferro + carbonio ****************" << endl;
-    std::string comp1[] = {"ferro", "carbonio"};
-    bres = insertItem(indus, "acciaio", comp1, 2);
+    cout << "*************** Test " << i++ << ": insertItem 'lingotto di ferro' = ferro + carbone ****************" << endl;
+    std::string comp1[] = {"ferro", "carbone"};
+    bres = insertItem(indus, "lingotto di ferro", comp1, 2);
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": howManyItem 'acciaio' ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'lingotto di ferro' ****************" << endl;
     try {
-        bres = howManyItem(indus, "acciaio", ires);
+        bres = howManyItem(indus, "lingotto di ferro", ires);
         breq = true;
         ireq = 0; // 50 ferro, 0 carbonio ⇒ 0 acciaio
         if (bres == breq && ires == ireq)
@@ -54,15 +56,15 @@ int main() {
         cout << "  Result: FAILED (exception thrown)\n\n";
     }
 
-    cout << "*************** Test " << i++ << ": addBasicItem 'carbonio', +50 ****************" << endl;
-    bres = addBasicItem(indus, "carbonio", 50);
+    cout << "*************** Test " << i++ << ": addBasicItem 'carbone', +50 ****************" << endl;
+    bres = addBasicItem(indus, "carbone", 50);
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": howManyItem 'acciaio' (dopo aggiunta carbonio) ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'lingotto di ferro' (dopo aggiunta carbone) ****************" << endl;
     try {
-        bres = howManyItem(indus, "acciaio", ires);
+        bres = howManyItem(indus, "lingotto di ferro", ires);
         breq = true;
         ireq = 50; // ora ho 50 ferro + 50 carbonio ⇒ 50 acciaio
         if (bres == breq && ires == ireq)
@@ -73,16 +75,16 @@ int main() {
         cout << "  Result: FAILED (exception thrown)\n\n";
     }
 
-    cout << "*************** Test " << i++ << ": insertItem 'bullone' = acciaio ****************" << endl;
-    std::string comp2[] = {"acciaio"};
-    bres = insertItem(indus, "bullone", comp2, 1);
+    cout << "*************** Test " << i++ << ": insertItem 'pepita di ferro' = lingotto di ferro ****************" << endl;
+    std::string comp2[] = {"lingotto di ferro"};
+    bres = insertItem(indus, "pepita di ferro", comp2, 1);
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": howManyItem 'bullone' ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'pepita di ferro' ****************" << endl;
     try {
-        bres = howManyItem(indus, "bullone", ires);
+        bres = howManyItem(indus, "pepita di ferro", ires);
         breq = true;
         ireq = 50; // 50 acciaio ⇒ 50 bulloni
         if (bres == breq && ires == ireq)
@@ -93,9 +95,9 @@ int main() {
         cout << "  Result: FAILED (exception thrown)\n\n";
     }
 
-    cout << "*************** Test " << i++ << ": howManyItem 'motore' (non esistente) ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'catena' (non esistente) ****************" << endl;
     try {
-        bres = howManyItem(indus, "motore", ires);
+        bres = howManyItem(indus, "catena", ires);
         breq = false;
         if (bres == breq)
             cout << "  Result: PASSED (not available)\n\n";
@@ -105,16 +107,16 @@ int main() {
         cout << "  Result: PASSED (exception correctly thrown)\n\n";
     }
 
-    cout << "*************** Test " << i++ << ": insertItem 'motore' = bullone + acciaio ****************" << endl;
-    std::string comp3[] = {"bullone", "acciaio"};
-    bres = insertItem(indus, "motore", comp3, 2);
+    cout << "*************** Test " << i++ << ": insertItem 'catena' = pepita di ferro + lingotto di ferro ****************" << endl;
+    std::string comp3[] = {"pepita di ferro", "lingotto di ferro"};
+    bres = insertItem(indus, "catena", comp3, 2);
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": howManyItem 'motore' ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'catena' ****************" << endl;
     try {
-        bres = howManyItem(indus, "motore", ires);
+        bres = howManyItem(indus, "catena", ires);
         breq = true;
         ireq = 25; 
         if (bres == breq && ires == ireq)
@@ -131,15 +133,15 @@ int main() {
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": addBasicItem 'carbonio', +50 ****************" << endl;
-    bres = addBasicItem(indus, "carbonio", 50);
+    cout << "*************** Test " << i++ << ": addBasicItem 'carbone', +50 ****************" << endl;
+    bres = addBasicItem(indus, "carbone", 50);
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": howManyItem 'motore' dopo aggiunta materie prime ****************" << endl;
+    cout << "*************** Test " << i++ << ": howManyItem 'catena' dopo aggiunta materie prime ****************" << endl;
     try {
-        bres = howManyItem(indus, "motore", ires);
+        bres = howManyItem(indus, "catena", ires);
         breq = true;
         ireq = 50; // ora ho risorse per produrre altri 50 motori
         if (bres == breq && ires == ireq)
@@ -166,8 +168,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeed(acciaio) ****************"<<endl;
-    bres=listNeed(indus, "acciaio", lst);
+    cout<<"*************** Test "<<i++<<": listNeed(lingotto di ferro) ****************"<<endl;
+    bres=listNeed(indus, "lingotto di ferro", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -181,8 +183,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeed(motore) ****************"<<endl;
-    bres=listNeed(indus, "motore", lst);
+    cout<<"*************** Test "<<i++<<": listNeed(catena) ****************"<<endl;
+    bres=listNeed(indus, "catena", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -226,8 +228,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeededBy(acciaio) ****************"<<endl;
-    bres=listNeededBy(indus, "acciaio", lst);
+    cout<<"*************** Test "<<i++<<": listNeededBy(lingotto di ferro) ****************"<<endl;
+    bres=listNeededBy(indus, "lingotto di ferro", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -241,8 +243,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeededBy(motore) ****************"<<endl;
-    bres=listNeededBy(indus, "motore", lst);
+    cout<<"*************** Test "<<i++<<": listNeededBy(catena) ****************"<<endl;
+    bres=listNeededBy(indus, "catena", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -271,8 +273,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeededByChain(acciaio) ****************"<<endl;
-    bres=listNeededByChain(indus, "acciaio", lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(lingotto di ferro) ****************"<<endl;
+    bres=listNeededByChain(indus, "lingotto di ferro", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -286,8 +288,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeededByChain(bullone) ****************"<<endl;
-    bres=listNeededByChain(indus, "bullone", lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(pepita di ferro) ****************"<<endl;
+    bres=listNeededByChain(indus, "pepita di ferro", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -301,8 +303,8 @@ int main() {
     cout<<endl;
 
     list::clear(lst);
-    cout<<"*************** Test "<<i++<<": listNeededByChain(motore) ****************"<<endl;
-    bres=listNeededByChain(indus, "motore", lst);
+    cout<<"*************** Test "<<i++<<": listNeededByChain(catena) ****************"<<endl;
+    bres=listNeededByChain(indus, "catena", lst);
     breq=true;
     if(bres==breq){
         cout<<"  Result: PASSED"<<endl;
@@ -315,14 +317,18 @@ int main() {
     }
     cout<<endl;
     
-    cout << "*************** Test " << i++ << ": removeItem 'bullone' ****************" << endl;
-    bres = removeItem(indus, "bullone");
+    cout << endl;
+    printIndustry(indus);
+    cout << endl;
+
+    cout << "*************** Test " << i++ << ": removeItem 'pepita di ferro' ****************" << endl;
+    bres = removeItem(indus, "pepita di ferro");
     breq = true;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
     
-    cout << "*************** Test " << i++ << ": isPresentItem 'bullone' ****************" << endl;
-    bres = isPresentItem(indus, "bullone");
+    cout << "*************** Test " << i++ << ": isPresentItem 'pepita di ferro' ****************" << endl;
+    bres = isPresentItem(indus, "pepita di ferro");
     breq = false;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
@@ -339,11 +345,15 @@ int main() {
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
 
-    cout << "*************** Test " << i++ << ": isPresentItem 'acciaio' ****************" << endl;
-    bres = isPresentItem(indus, "acciaio");
+    cout << "*************** Test " << i++ << ": isPresentItem 'lingotto di ferro' ****************" << endl;
+    bres = isPresentItem(indus, "lingotto di ferro");
     breq = false;
     if (bres == breq) cout << "  Result: PASSED\n\n";
     else cout << "  Result: FAILED\n\n";
+    
+    cout << endl;
+    printIndustry(indus);
+    cout << endl;
     
     cout << " /* Fine dei test */" << endl;
     cout << endl;

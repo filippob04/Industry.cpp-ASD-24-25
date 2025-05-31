@@ -85,6 +85,7 @@ struct industry::st_Industry {
 };
 
 ```
+### 📄 Documentazione
 
 ``` text
     In questo laboratorio ci proponiamo di progettare e implementare una struttura dati

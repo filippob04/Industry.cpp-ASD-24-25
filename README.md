@@ -11,6 +11,11 @@
 - [Repository Universitaria Generale](https://github.com/filippob04/uni-24-25)
 - [Repository ASD Generale](https://github.com/filippob04/ASD-24-25)
 
+## ⚙️ Come Eseguire:
+```text
+g++ -Wall -std=c++23 *.cpp -o nomeFile
+```
+
 ``` CPP
 
 /**********************************************************************/

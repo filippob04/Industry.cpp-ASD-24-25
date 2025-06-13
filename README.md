@@ -12,7 +12,7 @@
 - [Repository ASD Generale](https://github.com/filippob04/ASD-24-25)
 
 ## ⚙️ Come Eseguire:
-```text
+```bash
 g++ -Wall -std=c++23 *.cpp -o nomeFile
 ```
 

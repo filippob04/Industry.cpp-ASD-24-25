@@ -548,7 +548,8 @@ bool industry::insertItem(Industry& indus, std::string name, std::string* compon
     cItemGraph& g = indus->composedItems;
 
     if(findCompItem(g, name)){return false;} // Se esiste gia' questo componente -> false
-
+    if(s == 0){return false;} // Se non vengono passati componenti -> false
+    
     // Creo degli array temporanei di supporto per evitare ricerche ripetute
     bItem* B = new bItem[s];
     cItemGraph* C = new cItemGraph[s];

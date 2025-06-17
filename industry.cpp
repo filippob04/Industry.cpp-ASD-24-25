@@ -686,7 +686,7 @@ bool industry::listNeed(const Industry& indus, std::string name, list::List& lre
     lres = list::createEmpty(); // Inizializzo la lista di output
 
     cItemGraph c = findCompItem(g, name);
-    if(cIsEmpty(c)){return false;} // caso base, elemento non trovato
+    if(cIsEmpty(c)){return true;} // caso base, elemento non trovato
 
     // Liste di adiacenza (ordinate)
     cItemVertex::bItemList bList = c->baseList;
